@@ -79,3 +79,55 @@ ERROR_MESSAGES = {
     'data_invalid': '⚠️ Data validation failed: {}',
     'missing_column': '❌ Required column "{}" not found in {}',
 }
+
+# ─── SIMULATION & INTELLIGENCE PARAMETERS ────────────────────
+AVG_ORDER_VALUE = 350          # ₹ — standard Indian quick-commerce basket
+ORDERS_PER_MONTH_WINBACK = 2   # realistic order frequency for recovered churned customers (1-2 recommended)
+CHAMPION_LTV_ITEMS = 16.9      # from rfm_summary: avg_monetary for Champions
+PRICE_ELASTICITY = -2.0        # standard retail price elasticity assumption
+MAX_EXPECTED_DISCOUNT = 40.0   # 40% = upper bound for discount aggressiveness scoring
+
+
+# ─── CATEGORY MAPPINGS ────────────────────────────────────────
+BLINKIT_CAT_MAP = {
+    'Fruits and Vegetables': 'Fresh Produce', 'Dairy': 'Dairy & Eggs',
+    'Soft Drinks': 'Beverages', 'Baking Goods': 'Bakery & Grains',
+    'Snack Foods': 'Meat & Snacks', 'Breads': 'Bakery & Grains',
+    'Meat': 'Meat & Snacks', 'Seafood': 'Meat & Snacks',
+    'Breakfast': 'Bakery & Grains', 'Health and Hygiene': 'Personal Care',
+    'Starchy Foods': 'Bakery & Grains', 'Household': 'Personal Care',
+}
+
+BIGBASKET_CAT_MAP = {
+    'Beverages': 'Beverages', 'Bakery, Cakes & Dairy': 'Dairy & Eggs',
+    'Fruits & Vegetables': 'Fresh Produce', 'Foodgrains, Oil & Masala': 'Bakery & Grains',
+    'Snacks & Branded Foods': 'Meat & Snacks', 'Eggs, Meat & Fish': 'Meat & Snacks',
+    'Beauty & Hygiene': 'Personal Care', 'Cleaning & Household': 'Personal Care',
+}
+
+ZEPTO_CAT_MAP = {
+    'Fruits & Vegetables': 'Fresh Produce', 'Dairy, Bread & Batter': 'Dairy & Eggs',
+    'Beverages': 'Beverages', 'Munchies': 'Meat & Snacks',
+    'Meats, Fish & Eggs': 'Meat & Snacks', 'Biscuits': 'Bakery & Grains',
+    'Packaged Food': 'Bakery & Grains', 'Personal Care': 'Personal Care',
+}
+
+# Standard mapping for the Review & Rating page
+BLINKIT_REVIEW_CAT_MAP = {
+    'Fruits and Vegetables': 'Fresh Produce', 'Health and Hygiene': 'Other',
+    'Frozen Foods': 'Meat & Snacks', 'Canned': 'Other', 'Soft Drinks': 'Beverages',
+    'Dairy': 'Dairy', 'Baking Goods': 'Bakery & Grains', 'Snack Foods': 'Meat & Snacks',
+    'Household': 'Other', 'Breads': 'Bakery & Grains', 'Meat': 'Meat & Snacks',
+    'Seafood': 'Meat & Snacks', 'Breakfast': 'Bakery & Grains', 'Starchy Foods': 'Bakery & Grains'
+}
+
+BIGBASKET_REVIEW_CAT_MAP = {
+    'Beauty & Hygiene': 'Other', 'Kitchen, Garden & Pets': 'Other',
+    'Cleaning & Household': 'Other', 'Gourmet & World Food': 'Other',
+    'Foodgrains, Oil & Masala': 'Bakery & Grains', 'Snacks & Branded Foods': 'Meat & Snacks',
+    'Beverages': 'Beverages', 'Bakery, Cakes & Dairy': 'Dairy',
+    'Fruits & Vegetables': 'Fresh Produce', 'Eggs, Meat & Fish': 'Meat & Snacks',
+    'Baby Care': 'Other'
+}
+
+

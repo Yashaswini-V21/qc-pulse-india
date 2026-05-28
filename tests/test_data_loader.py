@@ -41,11 +41,11 @@ class TestDataLoader(unittest.TestCase):
                 df = _load_csv(str(blinkit_path), "Test Blinkit")
                 self.assertIsInstance(df, pd.DataFrame)
                 self.assertGreater(len(df), 0, "Blinkit data should have rows")
-                print(f"✓ Blinkit: {len(df):,} rows × {len(df.columns)} columns")
+                print(f"[OK] Blinkit: {len(df):,} rows x {len(df.columns)} columns")
             except Exception as e:
                 self.fail(f"Failed to load blinkit_clean.csv: {str(e)}")
         else:
-            print(f"⚠️  Skipping: {blinkit_path} not found")
+            print(f"[WARN] Skipping: {blinkit_path} not found")
     
     def test_groceries_data_loading(self):
         """Test groceries dataset loading."""
@@ -56,11 +56,11 @@ class TestDataLoader(unittest.TestCase):
                 df = _load_csv(str(groceries_path), "Test Groceries")
                 self.assertIsInstance(df, pd.DataFrame)
                 self.assertGreater(len(df), 0)
-                print(f"✓ Groceries: {len(df):,} rows × {len(df.columns)} columns")
+                print(f"[OK] Groceries: {len(df):,} rows x {len(df.columns)} columns")
             except Exception as e:
                 self.fail(f"Failed to load groceries_clean.csv: {str(e)}")
         else:
-            print(f"⚠️  Skipping: {groceries_path} not found")
+            print(f"[WARN] Skipping: {groceries_path} not found")
     
     def test_rfm_data_loading(self):
         """Test RFM segmentation data loading."""
@@ -71,11 +71,11 @@ class TestDataLoader(unittest.TestCase):
                 df = _load_csv(str(rfm_path), "Test RFM")
                 self.assertIsInstance(df, pd.DataFrame)
                 self.assertIn('segment', df.columns, "RFM should have segment column")
-                print(f"✓ RFM Segments: {len(df):,} rows × {len(df.columns)} columns")
+                print(f"[OK] RFM Segments: {len(df):,} rows x {len(df.columns)} columns")
             except Exception as e:
                 self.fail(f"Failed to load rfm_segments.csv: {str(e)}")
         else:
-            print(f"⚠️  Skipping: {rfm_path} not found")
+            print(f"[WARN] Skipping: {rfm_path} not found")
     
     def test_column_validation_success(self):
         """Test successful column validation."""
@@ -101,7 +101,7 @@ class TestDataLoader(unittest.TestCase):
                 print(f"  Duplicate rows in Blinkit: {duplicates}")
                 # Note: This may pass even with duplicates - depends on data
             except Exception as e:
-                print(f"⚠️  Could not run integrity test: {str(e)}")
+                print(f"[WARN] Could not run integrity test: {str(e)}")
     
     def test_missing_file(self):
         """Test handling of missing files."""
@@ -143,9 +143,9 @@ class TestDataConsistency(unittest.TestCase):
                 
                 self.assertEqual(customers_in_rfm, customers_in_sum,
                     f"Customer count mismatch: {customers_in_rfm} vs {customers_in_sum}")
-                print(f"✓ RFM customer count consistent: {customers_in_rfm:,}")
+                print(f"[OK] RFM customer count consistent: {customers_in_rfm:,}")
             except Exception as e:
-                print(f"⚠️  Skipping consistency check: {str(e)}")
+                print(f"[WARN] Skipping consistency check: {str(e)}")
     
     def test_segments_valid(self):
         """Test that RFM segments are valid."""
@@ -160,9 +160,9 @@ class TestDataConsistency(unittest.TestCase):
                     actual_segments = set(rfm['segment'].unique())
                     self.assertTrue(actual_segments.issubset(valid_segments),
                         f"Invalid segments found: {actual_segments - valid_segments}")
-                    print(f"✓ Valid segments: {actual_segments}")
+                    print(f"[OK] Valid segments: {actual_segments}")
             except Exception as e:
-                print(f"⚠️  Skipping segment validation: {str(e)}")
+                print(f"[WARN] Skipping segment validation: {str(e)}")
 
 
 def run_all_tests():
@@ -185,7 +185,7 @@ def run_all_tests():
     # Print summary
     print("\n" + "="*70)
     if result.wasSuccessful():
-        print("✓ All tests passed!")
+        print("[OK] All tests passed!")
     else:
         print(f"✗ {len(result.failures)} failures, {len(result.errors)} errors")
     print("="*70 + "\n")
