@@ -1,0 +1,51 @@
+name: Feature Request
+description: Suggest a new feature
+title: "[FEATURE] "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: "Thanks for suggesting! Please describe your feature idea."
+  
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem Statement
+      description: What problem does this solve?
+      placeholder: "Users want to export custom reports without technical knowledge"
+    validations:
+      required: true
+  
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed Solution
+      description: How should this feature work?
+      placeholder: "Add 'Export Report' button that generates PDF with selected visualizations"
+    validations:
+      required: true
+  
+  - type: textarea
+    id: examples
+    attributes:
+      label: Examples / Use Cases
+      description: Real-world scenarios where this helps
+      placeholder: |
+        - Marketing team needs monthly reports for leadership
+        - Sales team wants to email customer segments to field reps
+  
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternative Solutions
+      description: Other approaches considered
+  
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      options:
+        - label: I've searched existing issues
+          required: true
+        - label: This aligns with project goals
+          required: true

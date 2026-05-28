@@ -1,0 +1,6 @@
+segment,customers,avg_recency,avg_frequency,avg_monetary,avg_rfm_score,pct_customers
+At-Risk,206,131.6,1.7,4.1,5.5,5.3
+Champion,809,57.9,6.3,16.9,13.9,20.8
+Churned,889,399.9,2.0,4.7,4.2,22.8
+Loyal,1006,123.7,4.5,11.9,11.0,25.8
+Potential,988,183.9,3.2,8.1,8.0,25.3

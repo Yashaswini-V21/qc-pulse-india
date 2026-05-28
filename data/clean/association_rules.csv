@@ -1,0 +1,2 @@
+antecedents_str,consequents_str,support_pct,confidence_pct,lift,rule
+frankfurter,other vegetables,0.5,13.6,1.12,frankfurter → other vegetables

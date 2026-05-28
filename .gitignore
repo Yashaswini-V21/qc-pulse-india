@@ -1,0 +1,73 @@
+# ─── Python ────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+*.egg
+
+# ─── Virtual Environment ────────────────────────────────
+.venv/
+venv/
+ENV/
+env/
+.env
+
+# ─── IDE & Editor ───────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+*.sublime-project
+*.sublime-workspace
+
+# ─── Jupyter ────────────────────────────────────────────
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+.jupyter/
+
+# ─── Data (Large files) ─────────────────────────────────
+# Keep clean data but ignore raw data
+data/raw/*.csv
+data/raw/*.xlsx
+data/raw/*.xls
+!data/raw/.gitkeep
+
+# ─── Streamlit ──────────────────────────────────────────
+.streamlit/
+.streamlit/secrets.toml
+
+# ─── Testing ────────────────────────────────────────────
+.pytest_cache/
+.coverage
+htmlcov/
+*.cover
+
+# ─── Logs ───────────────────────────────────────────────
+*.log
+logs/
+
+# ─── OS ─────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+
+# ─── Project Specific ───────────────────────────────────
+outputs/*.html
+temp/
+.streamlit/
+
+# ─── Credentials ────────────────────────────────────────
+# Never commit credentials!
+credentials.json
+secrets.json
+.secrets.*
+
+# Keep README and documentation
+!README.md
+!data/data_schema.md
+!notebooks/
