@@ -1,0 +1,10 @@
+[client]
+showErrorDetails = true
+showDeprecationWarnings = false
+
+[theme]
+primaryColor = "#8B5CF6"
+backgroundColor = "#050810"
+secondaryBackgroundColor = "#0D1117"
+textColor = "#F8FAFC"
+font = "sans serif"
