@@ -1,18 +1,51 @@
+"""Market Basket Analysis page — Premium "Dark Intelligence" design."""
 import streamlit as st
 import pandas as pd
 import plotly.express as px
-from typing import Dict, Any
+from utils.charts import apply_premium_theme, BAR_COLOR
+
 
 def render_market_basket(
     ar: pd.DataFrame,
-    DARK_LAYOUT: Dict[str, Any]
 ) -> None:
-    """
-    Renders modular Market Basket Analysis page for QC Pulse India.
-    """
-    st.markdown("<span class='stat-badge'>PRODUCT AFFINITY</span>", unsafe_allow_html=True)
-    st.title("Market Basket Analysis")
-    st.markdown("<p style='color:#475569;font-size:14px;margin-top:-8px'>Association rules generated from 38,765 customer shopping transactions using the Apriori algorithm.</p>", unsafe_allow_html=True)
+    """Renders Market Basket Analysis page with premium design."""
+    # ── CYBER HEADER ──
+    st.markdown("""
+    <div style="padding: 24px 0 16px; animation: fadeIn 0.8s ease;">
+      <div style="display:flex; align-items:center; gap:14px; margin-bottom:12px;">
+        <div style="
+          width:44px; height:44px;
+          background: linear-gradient(135deg, #10B981, #06B6D4);
+          border-radius:12px;
+          display:flex; align-items:center; justify-content:center;
+          font-size:22px;
+          box-shadow: 0 8px 24px rgba(6,182,212,0.3);
+        ">🛒</div>
+        <div>
+          <div class="stat-badge" style="margin:0; background:rgba(6,182,212,0.15); border-color:rgba(6,182,212,0.35); color:#22D3EE; box-shadow:0 0 15px rgba(6,182,212,0.15);">PRODUCT AFFINITY</div>
+          <div class="live-badge" style="margin-top:4px;">
+            <span class="status-dot status-live"></span>
+            Apriori Engine Connected
+          </div>
+        </div>
+      </div>
+      <h1 style="
+        font-size:40px !important;
+        font-weight:900 !important;
+        letter-spacing:-0.03em !important;
+        line-height:1.1 !important;
+        margin:0 0 8px !important;
+        background: linear-gradient(135deg, #FFFFFF 0%, #A7F3D0 50%, #06B6D4 100%) !important;
+        -webkit-background-clip: text !important;
+        -webkit-text-fill-color: transparent !important;
+      ">Market Basket Analysis</h1>
+      <p style="
+        font-size:14.5px; color:#64748B;
+        font-weight:400; margin:0 0 20px;
+        line-height:1.6;
+      ">Association rules generated from 38,765 customer shopping transactions using the Apriori algorithm.</p>
+    </div>
+    """, unsafe_allow_html=True)
     st.markdown("---")
 
     if len(ar) == 0:
@@ -41,16 +74,14 @@ def render_market_basket(
                 ar,
                 x='confidence_pct', y='lift',
                 size='support_pct', color='lift',
-                color_continuous_scale=[[0, '#1E2D40'], [0.5, '#7C3AED'], [1, '#DC2626']],
+                color_continuous_scale=[[0, 'rgba(139,92,246,0.2)'], [0.5, '#8B5CF6'], [1, '#A78BFA']],
                 hover_data=['rule', 'support_pct', 'confidence_pct', 'lift'],
                 labels={'confidence_pct': 'Confidence % (If bought X, prob of Y)',
                         'lift': 'Lift (Multiplier vs Random purchase)',
                         'support_pct': 'Support % (Frequency in all baskets)'}
             )
-            fig_scatter.update_layout(
-                **DARK_LAYOUT, height=380,
-                coloraxis_showscale=False
-            )
+            apply_premium_theme(fig_scatter, height=380)
+            fig_scatter.update_layout(coloraxis_showscale=False)
             st.plotly_chart(fig_scatter, use_container_width=True)
 
         with col2:
@@ -67,17 +98,22 @@ def render_market_basket(
                 st.markdown(f"<p style='color:#94A3B8;font-size:13px;margin-bottom:12px;'>Customers buying <b>{selected_item}</b> are also highly likely to buy:</p>", unsafe_allow_html=True)
                 for _, row in matching_rules.iterrows():
                     st.markdown(f"""
-                    <div style='background: linear-gradient(135deg, #0F1C2E 0%, #0D1823 100%);
-                                border: 1px solid #1E2D40; border-radius: 10px; padding: 12px 16px; margin-bottom: 8px;'>
+                    <div style='background: linear-gradient(135deg,
+                                  rgba(13,17,23,0.9) 0%, rgba(8,12,24,0.8) 100%);
+                                border: 1px solid rgba(139,92,246,0.12);
+                                border-radius: 12px; padding: 14px 18px; margin-bottom: 8px;
+                                backdrop-filter: blur(20px);
+                                transition: all 0.3s ease;'>
                         <div style='display:flex; justify-content:space-between; align-items:center;'>
-                            <span style='color:#F1F5F9; font-weight:700; font-size:14px;'>👉 {row['consequents_str']}</span>
-                            <span style='background: rgba(220,38,38,.12); border: 1px solid rgba(220,38,38,.25);
-                                         color:#FCA5A5; font-size:10px; font-weight:700; padding:2px 8px;
-                                         border-radius:99px; font-family:Space Mono,monospace;'>
+                            <span style='color:#F8FAFC; font-weight:700; font-size:14px;'>👉 {row['consequents_str']}</span>
+                            <span style='background: rgba(139,92,246,0.12);
+                                         border: 1px solid rgba(139,92,246,0.25);
+                                         color:#A78BFA; font-size:10px; font-weight:700;
+                                         padding:2px 8px; border-radius:99px;'>
                                 {row['lift']:.2f}x Lift
                             </span>
                         </div>
-                        <div style='font-size:11px; color:#475569; font-family:Space Mono,monospace; margin-top: 4px;'>
+                        <div style='font-size:11px; color:#475569; margin-top: 4px;'>
                             Confidence: <span style='color:#94A3B8;'>{row['confidence_pct']}%</span> |
                             Support: <span style='color:#94A3B8;'>{row['support_pct']}%</span>
                         </div>

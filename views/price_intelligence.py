@@ -1,39 +1,72 @@
+"""Price Intelligence page — Premium "Dark Intelligence" design."""
 import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
 import plotly.express as px
 import logging
-from typing import Dict, Any
 from config import PLATFORM_COLORS
+from utils.charts import (
+    apply_premium_theme, apply_premium_theme_no_axes,
+    PRICE_GAP_COLORSCALE, BAR_COLOR, hex_to_rgba
+)
 
-# Ensure proper logger configuration
 logger = logging.getLogger(__name__)
 
+
 def _format_scorecard_cell(platform: str, val: float, winner_platform: str) -> str:
-    """
-    Helper to format scorecard cells and show a medal icon for the winning platform.
-    Declared at module scope to fix Python inner-loop function declaration anti-pattern.
-    """
+    """Format scorecard cells with winner highlight."""
     if platform == winner_platform:
-        return f"<span style='color:#1D9E75;font-weight:700'>{val:.0f} 🥇</span>"
+        return f"<span style='color:#A78BFA;font-weight:700'>{val:.0f} 🥇</span>"
     return f"<span style='color:#64748B'>{val:.0f}</span>"
+
 
 def render_price_intelligence(
     bl: pd.DataFrame,
     ze: pd.DataFrame,
     bb: pd.DataFrame,
     pm: pd.DataFrame,
-    DARK_LAYOUT: Dict[str, Any]
 ) -> None:
-    """
-    Renders modular Price Intelligence page for QC Pulse India.
-    """
-    st.markdown("<span class='stat-badge'>COMPETITIVE INTEL</span>", unsafe_allow_html=True)
-    st.title("Price Intelligence Matrix")
-    st.markdown("<p style='color:#475569;font-size:14px;margin-top:-8px'>Who wins the price war? Blinkit vs Zepto vs BigBasket — category by category.</p>", unsafe_allow_html=True)
+    """Renders Price Intelligence page with premium design."""
+    # ── CYBER HEADER ──
+    st.markdown("""
+    <div style="padding: 24px 0 16px; animation: fadeIn 0.8s ease;">
+      <div style="display:flex; align-items:center; gap:14px; margin-bottom:12px;">
+        <div style="
+          width:44px; height:44px;
+          background: linear-gradient(135deg, #8B5CF6, #F43F5E);
+          border-radius:12px;
+          display:flex; align-items:center; justify-content:center;
+          font-size:22px;
+          box-shadow: 0 8px 24px rgba(139,92,246,0.3);
+        ">⚔️</div>
+        <div>
+          <div class="stat-badge" style="margin:0;">COMPETITIVE INTEL</div>
+          <div class="live-badge" style="margin-top:4px;">
+            <span class="status-dot status-live"></span>
+            Price War Matrix Active
+          </div>
+        </div>
+      </div>
+      <h1 style="
+        font-size:40px !important;
+        font-weight:900 !important;
+        letter-spacing:-0.03em !important;
+        line-height:1.1 !important;
+        margin:0 0 8px !important;
+        background: linear-gradient(135deg, #FFFFFF 0%, #C4B5FD 50%, #93C5FD 100%) !important;
+        -webkit-background-clip: text !important;
+        -webkit-text-fill-color: transparent !important;
+      ">Price Intelligence Matrix</h1>
+      <p style="
+        font-size:14.5px; color:#64748B;
+        font-weight:400; margin:0 0 20px;
+        line-height:1.6;
+      ">Who wins the price war? Blinkit vs Zepto vs BigBasket — category by category.</p>
+    </div>
+    """, unsafe_allow_html=True)
     st.markdown("---")
 
-    # ── 🏆 COMPETITIVE SCORECARD ─────────────────────────────────────────
+    # ── 🏆 COMPETITIVE SCORECARD ──
     st.markdown("<p class='section-label'>🏆 Platform Competitive Scorecard 2026</p>", unsafe_allow_html=True)
     st.markdown(
         "<p style='color:#475569;font-size:13px;margin-bottom:20px'>"
@@ -48,13 +81,6 @@ def render_price_intelligence(
 
         categories_radar = ['Price<br>Competitiveness', 'Catalog<br>Depth',
                             'Discount<br>Aggressiveness', 'Category<br>Coverage']
-        def hex_to_rgba(hex_str, opacity=0.12):
-            hex_str = hex_str.lstrip('#')
-            r = int(hex_str[0:2], 16)
-            g = int(hex_str[2:4], 16)
-            b = int(hex_str[4:6], 16)
-            return f"rgba({r},{g},{b},{opacity})"
-
         fill_colors = {p: hex_to_rgba(c, 0.12) for p, c in PLATFORM_COLORS.items()}
 
         fig_radar = go.Figure()
@@ -73,18 +99,27 @@ def render_price_intelligence(
 
         fig_radar.update_layout(
             polar=dict(
-                bgcolor='#0D1823',
+                bgcolor='rgba(13,17,23,0.4)',
                 radialaxis=dict(visible=True, range=[0, 100], color='#475569',
-                                gridcolor='#1E2D40', tickfont=dict(size=9, color='#475569')),
-                angularaxis=dict(color='#94A3B8', gridcolor='#1E2D40',
-                                 linecolor='#1E2D40', tickfont=dict(size=11, color='#94A3B8'))
+                                gridcolor='rgba(139,92,246,0.06)',
+                                tickfont=dict(size=9, color='#475569')),
+                angularaxis=dict(color='#94A3B8',
+                                 gridcolor='rgba(139,92,246,0.06)',
+                                 linecolor='rgba(139,92,246,0.1)',
+                                 tickfont=dict(size=11, color='#94A3B8'))
             ),
-            paper_bgcolor='#0D1823', plot_bgcolor='#0D1823',
-            font=dict(color='#94A3B8', family='DM Sans'),
-            legend=dict(bgcolor='rgba(0,0,0,0)', font=dict(color='#94A3B8', size=12),
-                        bordercolor='#1E2D40', borderwidth=1,
+            paper_bgcolor='rgba(0,0,0,0)',
+            plot_bgcolor='rgba(0,0,0,0)',
+            font=dict(color='#94A3B8', family='Inter'),
+            legend=dict(bgcolor='rgba(13,17,23,0.8)', font=dict(color='#94A3B8', size=12),
+                        bordercolor='rgba(139,92,246,0.2)', borderwidth=1,
                         orientation='h', x=0.5, xanchor='center', y=-0.12),
             margin=dict(l=50, r=50, t=30, b=60), height=380,
+            hoverlabel=dict(
+                bgcolor='rgba(13,17,23,0.95)',
+                bordercolor='rgba(139,92,246,0.3)',
+                font=dict(color='#F8FAFC', size=12, family='Inter'),
+            ),
         )
 
         col_radar, col_table = st.columns([1, 1.2])
@@ -96,12 +131,13 @@ def render_price_intelligence(
             st.markdown("<br>", unsafe_allow_html=True)
             st.markdown("""
             <div style='grid-template-columns:1.6fr 1fr 1fr 1fr;
-                        display:grid; gap:8px;padding:4px 12px;font-size:10px;color:#334155;
-                        font-family:Space Mono,monospace;margin-bottom:4px'>
+                        display:grid; gap:8px;padding:4px 12px;font-size:10px;color:#475569;
+                        font-weight:700; letter-spacing:0.1em; text-transform:uppercase;
+                        margin-bottom:4px'>
                 <div>METRIC</div>
-                <div style='color:#DC2626'>BLINKIT</div>
-                <div style='color:#1D9E75'>ZEPTO</div>
-                <div style='color:#6C63DB'>BIGBASKET</div>
+                <div style='color:#FF3366'>BLINKIT</div>
+                <div style='color:#00F5A0'>ZEPTO</div>
+                <div style='color:#B923FF'>BIGBASKET</div>
             </div>""", unsafe_allow_html=True)
 
             metrics_rows = [
@@ -120,9 +156,9 @@ def render_price_intelligence(
                 st.markdown(f"""
                 <div style='display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr;
                             gap:8px;padding:8px 12px;margin-bottom:4px;
-                            background:{"rgba(15,28,46,0.9)" if is_total else "#0D1823"};
-                            border:1px solid {"#7C3AED" if is_total else "#1E2D40"};
-                            border-radius:8px;font-size:12px;'>
+                            background:{"rgba(139,92,246,0.08)" if is_total else "rgba(13,17,23,0.6)"};
+                            border:1px solid {"rgba(139,92,246,0.25)" if is_total else "rgba(139,92,246,0.08)"};
+                            border-radius:10px;font-size:12px;'>
                     <div style='color:#94A3B8;font-weight:{"700" if is_total else "400"}'>{mlabel}</div>
                     {_format_scorecard_cell("Blinkit", bl_v, winner)}
                     {_format_scorecard_cell("Zepto", ze_v, winner)}
@@ -138,13 +174,12 @@ def render_price_intelligence(
         n_cats_pm = len(pm)
 
         st.markdown(f"""
-        <div style='background: linear-gradient(135deg, #0F1C2E 0%, #0D1823 100%);
-                    border: 1px solid #1E2D40; border-left: 3px solid #7C3AED;
-                    border-radius: 0 12px 12px 0; padding: 18px 24px; margin-bottom: 24px;'>
-            <div style='font-family: Space Mono, monospace; font-size: 9px; color: #7C3AED;
+        <div class='glass-card' style='border-left: 3px solid #8B5CF6;
+                    border-radius: 0 20px 20px 0; margin-bottom: 24px;'>
+            <div style='font-size: 10px; color: #8B5CF6;
                         font-weight: 700; text-transform: uppercase; letter-spacing:.12em;
                         margin-bottom: 10px;'>📊 Intelligence Summary</div>
-            <ul style='color: #E2E8F0; font-size: 13px; line-height: 1.8; margin: 0; padding-left: 20px;'>
+            <ul style='color: #CBD5E1; font-size: 13px; line-height: 1.8; margin: 0; padding-left: 20px;'>
                 <li><b>{price_leader}</b> leads price competitiveness in
                     <b>{scores[price_leader]["price_wins"]} of {n_cats_pm}</b> categories —
                     the clearest value signal for price-sensitive consumers.</li>
@@ -163,7 +198,7 @@ def render_price_intelligence(
         st.warning(f"⚠️ Scorecard requires all platform data. ({_sc_err})")
         st.markdown("---")
 
-    # Dynamic: find the biggest price gap across all platforms
+    # Dynamic price gap alert
     _gap_cols = {col: col.replace('_gap%', '') for col in pm.columns if '_gap%' in col}
     _max_gap_val = 0.0
     _max_gap_platform = "Zepto"
@@ -179,13 +214,18 @@ def render_price_intelligence(
     _gap_dir = "overprices" if _max_gap_val > 0 else "underprices"
     _alert_icon = "📈" if _max_gap_val > 0 else "📉"
     st.markdown(f"""
-    <div style='background: rgba(220,38,38,0.1); border: 1px solid #DC2626; border-radius: 12px; padding: 16px; margin-bottom: 24px;'>
+    <div style='background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.3);
+                border-radius: 16px; padding: 18px 24px; margin-bottom: 24px;
+                backdrop-filter: blur(20px);'>
         <div style='display:flex; align-items:center; gap:12px;'>
             <span style='font-size:24px;'>{_alert_icon}</span>
             <div>
-                <div style='font-family: Space Mono, monospace; font-size:10px; color:#DC2626; font-weight:700; text-transform:uppercase;'>Pricing Disparity Alert</div>
-                <div style='font-size:15px; font-weight:600; color:#F1F5F9; margin-top:2px;'>
-                    {_max_gap_platform} {_gap_dir} <b>{_max_gap_category}</b> by <span style='color:#DC2626; font-weight:700;'>{abs(_max_gap_val):.1f}%</span> vs market average — the largest price gap in the dataset.
+                <div style='font-size:10px; color:#EF4444; font-weight:700;
+                            text-transform:uppercase; letter-spacing:0.1em;'>Pricing Disparity Alert</div>
+                <div style='font-size:15px; font-weight:600; color:#F8FAFC; margin-top:2px;'>
+                    {_max_gap_platform} {_gap_dir} <b>{_max_gap_category}</b> by
+                    <span style='color:#EF4444; font-weight:700;'>{abs(_max_gap_val):.1f}%</span>
+                    vs market average — the largest price gap in the dataset.
                 </div>
             </div>
         </div>
@@ -194,8 +234,10 @@ def render_price_intelligence(
 
     # KPIs
     c1, c2, c3, c4 = st.columns(4)
-    with c1: st.metric("Platforms Compared", "3", "Blinkit · Zepto · BigBasket")
-    with c2: st.metric("Categories", str(len(pm)), "master categories")
+    with c1:
+        st.metric("Platforms Compared", "3", "Blinkit · Zepto · BigBasket")
+    with c2:
+        st.metric("Categories", str(len(pm)), "master categories")
     with c3:
         zd = ze['discount_pct'].median() if 'discount_pct' in ze.columns else 0
         st.metric("Zepto Median Discount", f"{zd:.0f}%", "most aggressive")
@@ -212,34 +254,32 @@ def render_price_intelligence(
         gd = pm[['category'] + gap_cols].dropna().copy()
         gd.columns = ['Category'] + [c.replace('_gap%', '') for c in gap_cols]
 
-        # Cells text in 14px bold white
         text_matrix = [[f"<b>{v:+.1f}%</b>" for v in row] for row in gd.iloc[:, 1:].values]
 
         fig = go.Figure(data=go.Heatmap(
             z=gd.iloc[:, 1:].values,
             x=gd.columns[1:].tolist(),
             y=gd['Category'].tolist(),
-            colorscale=[[0.0, '#14532D'], [0.5, '#F8FAFC'], [1.0, '#7F1D1D']],
+            colorscale=PRICE_GAP_COLORSCALE,
             zmid=0,
             text=text_matrix,
             texttemplate='%{text}',
-            textfont=dict(size=14, color='white', family='DM Sans'),
+            textfont=dict(size=14, color='white', family='Inter'),
             colorbar=dict(
                 title=dict(text='Gap %', font=dict(color='#94A3B8', size=11)),
                 ticksuffix='%', tickfont=dict(color='#94A3B8'),
-                bgcolor='#0D1823', bordercolor='#1E2D40', borderwidth=1
+                bgcolor='rgba(0,0,0,0)', bordercolor='rgba(139,92,246,0.2)', borderwidth=1
             )
         ))
+        apply_premium_theme_no_axes(fig, height=460)
         fig.update_layout(
-            **{k: v for k, v in DARK_LAYOUT.items() if k not in ['xaxis', 'yaxis']},
-            height=460,
             xaxis=dict(side='top', color='#94A3B8', tickfont=dict(size=13)),
             yaxis=dict(color='#94A3B8', autorange='reversed'),
             margin=dict(l=10, r=10, t=50, b=10)
         )
         st.plotly_chart(fig, use_container_width=True)
 
-    # Winner by Category section below heatmap
+    # Winner by Category
     st.markdown("<br>", unsafe_allow_html=True)
     st.markdown("<p class='section-label'>Platform Pricing Position by Category</p>", unsafe_allow_html=True)
     cols_win = st.columns(len(pm))
@@ -255,33 +295,37 @@ def render_price_intelligence(
         expensive = max(gaps, key=gaps.get) if gaps else None
 
         with cols_win[idx]:
-            st.markdown(f"<div style='font-size:11px; font-weight:700; color:#E2E8F0; margin-bottom:8px; height: 32px; line-height: 1.2;'>{cat}</div>", unsafe_allow_html=True)
+            st.markdown(f"<div style='font-size:11px; font-weight:700; color:#F8FAFC; margin-bottom:8px; height:32px; line-height:1.2;'>{cat}</div>", unsafe_allow_html=True)
             for p in ['Blinkit', 'Zepto', 'BigBasket']:
                 if p not in gaps:
                     st.markdown(f"""
-                    <div style='background:#1E2D40; border: 1px solid #334155; border-radius: 99px;
-                                padding:2px 6px; font-size:10px; text-align:center; color:#475569; margin-bottom:4px; font-family: Space Mono, monospace;'>
+                    <div style='background:rgba(139,92,246,0.05); border:1px solid rgba(139,92,246,0.1);
+                                border-radius:99px; padding:2px 6px; font-size:10px; text-align:center;
+                                color:#475569; margin-bottom:4px; font-weight:500;'>
                         {p[:2]}: N/A
                     </div>
                     """, unsafe_allow_html=True)
                 elif p == cheapest:
                     st.markdown(f"""
-                    <div style='background:#14532D; border: 1px solid #16A34A; border-radius: 99px;
-                                padding:2px 6px; font-size:10px; text-align:center; color:#86EFAC; font-weight:700; margin-bottom:4px; font-family: Space Mono, monospace;'>
+                    <div style='background:rgba(16,185,129,0.1); border:1px solid rgba(16,185,129,0.3);
+                                border-radius:99px; padding:2px 6px; font-size:10px; text-align:center;
+                                color:#6EE7B7; font-weight:700; margin-bottom:4px;'>
                         {p[:2]}: {gaps[p]:+.0f}%
                     </div>
                     """, unsafe_allow_html=True)
                 elif p == expensive:
                     st.markdown(f"""
-                    <div style='background:#7F1D1D; border: 1px solid #DC2626; border-radius: 99px;
-                                padding:2px 6px; font-size:10px; text-align:center; color:#FCA5A5; font-weight:700; margin-bottom:4px; font-family: Space Mono, monospace;'>
+                    <div style='background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.3);
+                                border-radius:99px; padding:2px 6px; font-size:10px; text-align:center;
+                                color:#FCA5A5; font-weight:700; margin-bottom:4px;'>
                         {p[:2]}: {gaps[p]:+.0f}%
                     </div>
                     """, unsafe_allow_html=True)
                 else:
                     st.markdown(f"""
-                    <div style='background:#0F1C2E; border: 1px solid #1E2D40; border-radius: 99px;
-                                padding:2px 6px; font-size:10px; text-align:center; color:#94A3B8; margin-bottom:4px; font-family: Space Mono, monospace;'>
+                    <div style='background:rgba(13,17,23,0.6); border:1px solid rgba(139,92,246,0.1);
+                                border-radius:99px; padding:2px 6px; font-size:10px; text-align:center;
+                                color:#94A3B8; margin-bottom:4px;'>
                         {p[:2]}: {gaps[p]:+.0f}%
                     </div>
                     """, unsafe_allow_html=True)
@@ -298,7 +342,7 @@ def render_price_intelligence(
 
             fig = px.bar(
                 disc, x='discount_pct', y='master_category', orientation='h',
-                color='discount_pct', color_continuous_scale=[[0, '#1E2D40'], [1, '#1D9E75']],
+                color_discrete_sequence=['#00F5A0'],
                 text='discount_pct',
                 labels={'discount_pct': 'Median Discount (%)', 'master_category': ''}
             )
@@ -307,8 +351,7 @@ def render_price_intelligence(
                 textfont=dict(color='#94A3B8', size=10),
                 marker_line_width=0
             )
-            fig.update_layout(**DARK_LAYOUT, height=330, coloraxis_showscale=False,
-                              yaxis=dict(color='#94A3B8', gridcolor='#1E2D40'))
+            apply_premium_theme(fig, height=330)
             fig.update_xaxes(showgrid=False)
             st.plotly_chart(fig, use_container_width=True)
 
@@ -320,7 +363,7 @@ def render_price_intelligence(
 
             fig_bb = px.bar(
                 disc_bb, x='discount_pct', y='category', orientation='h',
-                color='discount_pct', color_continuous_scale=[[0, '#1E2D40'], [1, '#6C63DB']],
+                color_discrete_sequence=['#B923FF'],
                 text='discount_pct',
                 labels={'discount_pct': 'Median Discount (%)', 'category': ''}
             )
@@ -329,7 +372,6 @@ def render_price_intelligence(
                 textfont=dict(color='#94A3B8', size=10),
                 marker_line_width=0
             )
-            fig_bb.update_layout(**DARK_LAYOUT, height=330, coloraxis_showscale=False,
-                                 yaxis=dict(color='#94A3B8', gridcolor='#1E2D40'))
+            apply_premium_theme(fig_bb, height=330)
             fig_bb.update_xaxes(showgrid=False)
             st.plotly_chart(fig_bb, use_container_width=True)

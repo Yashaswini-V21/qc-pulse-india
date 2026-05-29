@@ -1,27 +1,59 @@
+"""Review & Rating page — Premium "Dark Intelligence" design."""
 import streamlit as st
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
-from typing import Dict, Any
 from config import BLINKIT_REVIEW_CAT_MAP, BIGBASKET_REVIEW_CAT_MAP
+from utils.charts import apply_premium_theme, BAR_COLOR
 
 
 def render_review_rating(
     bl: pd.DataFrame,
     bb: pd.DataFrame,
-    DARK_LAYOUT: Dict[str, Any]
 ) -> None:
-    """
-    Renders modular Review & Rating page for QC Pulse India.
-    """
-    st.markdown("<span class='stat-badge'>CUSTOMER SENTIMENT</span>", unsafe_allow_html=True)
-    st.title("Review & Rating Analysis")
-    st.markdown("<p style='color:#475569;font-size:14px;margin-top:-8px'>Customer product ratings and feedback comparison across Blinkit and BigBasket.</p>", unsafe_allow_html=True)
+    """Renders Review & Rating page with premium design."""
+    # ── CYBER HEADER ──
+    st.markdown("""
+    <div style="padding: 24px 0 16px; animation: fadeIn 0.8s ease;">
+      <div style="display:flex; align-items:center; gap:14px; margin-bottom:12px;">
+        <div style="
+          width:44px; height:44px;
+          background: linear-gradient(135deg, #F59E0B, #EF4444);
+          border-radius:12px;
+          display:flex; align-items:center; justify-content:center;
+          font-size:22px;
+          box-shadow: 0 8px 24px rgba(245,158,11,0.3);
+        ">⭐</div>
+        <div>
+          <div class="stat-badge" style="margin:0; background:rgba(245,158,11,0.15); border-color:rgba(245,158,11,0.35); color:#F59E0B; box-shadow:0 0 15px rgba(245,158,11,0.15);">CUSTOMER SENTIMENT</div>
+          <div class="live-badge" style="margin-top:4px;">
+            <span class="status-dot status-live"></span>
+            Sentiment Analysis Engine Active
+          </div>
+        </div>
+      </div>
+      <h1 style="
+        font-size:40px !important;
+        font-weight:900 !important;
+        letter-spacing:-0.03em !important;
+        line-height:1.1 !important;
+        margin:0 0 8px !important;
+        background: linear-gradient(135deg, #FFFFFF 0%, #FDE68A 50%, #F59E0B 100%) !important;
+        -webkit-background-clip: text !important;
+        -webkit-text-fill-color: transparent !important;
+      ">Review & Rating Analysis</h1>
+      <p style="
+        font-size:14.5px; color:#64748B;
+        font-weight:400; margin:0 0 20px;
+        line-height:1.6;
+      ">Customer product ratings and feedback comparison across Blinkit and BigBasket.</p>
+    </div>
+    """, unsafe_allow_html=True)
     st.markdown("---")
 
     # Filter out null/invalid ratings
-    bb_rated = bb[bb['rating'].notna() & (bb['rating'] > 0)]
-    bl_rated = bl[bl['rating'].notna() & (bl['rating'] > 0)]
+    bb_rated = bb[bb['rating'].notna() & (bb['rating'] > 0)].copy()
+    bl_rated = bl[bl['rating'].notna() & (bl['rating'] > 0)].copy()
 
     # KPIs
     c1, c2, c3, c4 = st.columns(4)
@@ -47,7 +79,7 @@ def render_review_rating(
         fig_dist.add_trace(go.Histogram(
             x=bb_rated['rating'],
             name='BigBasket',
-            marker_color='#6C63DB',
+            marker_color='#B923FF',
             opacity=0.75,
             histnorm='percent',
             xbins=dict(start=1.0, end=5.0, size=0.2)
@@ -55,18 +87,19 @@ def render_review_rating(
         fig_dist.add_trace(go.Histogram(
             x=bl_rated['rating'],
             name='Blinkit',
-            marker_color='#DC2626',
+            marker_color='#FF3366',
             opacity=0.75,
             histnorm='percent',
             xbins=dict(start=1.0, end=5.0, size=0.2)
         ))
+        fig_dist.update_layout(barmode='overlay')
+        apply_premium_theme(fig_dist, height=360)
         fig_dist.update_layout(
-            barmode='overlay',
-            **DARK_LAYOUT,
-            height=360,
-            xaxis=dict(title='Rating Score', color='#94A3B8', gridcolor='#1E2D40'),
-            yaxis=dict(title='Percentage of Products (%)', color='#94A3B8', gridcolor='#1E2D40'),
-            legend=dict(bgcolor='rgba(0,0,0,0)', font=dict(color='#94A3B8', size=11))
+            xaxis=dict(title='Rating Score', color='#94A3B8',
+                       gridcolor='rgba(139,92,246,0.06)'),
+            yaxis=dict(title='Percentage of Products (%)', color='#94A3B8',
+                       gridcolor='rgba(139,92,246,0.06)'),
+            legend=dict(bgcolor='rgba(13,17,23,0.8)', font=dict(color='#94A3B8', size=11))
         )
         st.plotly_chart(fig_dist, use_container_width=True)
 
@@ -90,17 +123,19 @@ def render_review_rating(
         fig_cat = go.Figure()
         fig_cat.add_trace(go.Bar(
             x=cat_comp['Category'], y=cat_comp['BigBasket'],
-            name='BigBasket', marker_color='#6C63DB', marker_line_width=0
+            name='BigBasket', marker_color='#B923FF', marker_line_width=0
         ))
         fig_cat.add_trace(go.Bar(
             x=cat_comp['Category'], y=cat_comp['Blinkit'],
-            name='Blinkit', marker_color='#DC2626', marker_line_width=0
+            name='Blinkit', marker_color='#FF3366', marker_line_width=0
         ))
+        fig_cat.update_layout(barmode='group')
+        apply_premium_theme(fig_cat, height=360)
         fig_cat.update_layout(
-            barmode='group', **DARK_LAYOUT, height=360,
-            yaxis=dict(title='Avg Rating ★', range=[1.0, 5.0], color='#94A3B8', gridcolor='#1E2D40'),
-            xaxis=dict(color='#94A3B8', gridcolor='#1E2D40'),
-            legend=dict(bgcolor='rgba(0,0,0,0)', font=dict(color='#94A3B8', size=11))
+            yaxis=dict(title='Avg Rating ★', range=[1.0, 5.0], color='#94A3B8',
+                       gridcolor='rgba(139,92,246,0.06)'),
+            xaxis=dict(color='#94A3B8', gridcolor='rgba(139,92,246,0.06)'),
+            legend=dict(bgcolor='rgba(13,17,23,0.8)', font=dict(color='#94A3B8', size=11))
         )
         st.plotly_chart(fig_cat, use_container_width=True)
 
@@ -123,12 +158,13 @@ def render_review_rating(
         )
         fig_disc.update_traces(
             line=dict(width=3),
-            marker=dict(size=10, line=dict(color='#060B14', width=2))
+            marker=dict(size=10, line=dict(color='#050810', width=2))
         )
+        apply_premium_theme(fig_disc, height=320)
         fig_disc.update_layout(
-            **DARK_LAYOUT, height=320,
-            xaxis=dict(color='#94A3B8', gridcolor='#1E2D40'),
-            yaxis=dict(title='Avg Rating ★', range=[3.5, 4.8], color='#94A3B8', gridcolor='#1E2D40')
+            xaxis=dict(color='#94A3B8', gridcolor='rgba(139,92,246,0.06)'),
+            yaxis=dict(title='Avg Rating ★', range=[3.5, 4.8], color='#94A3B8',
+                       gridcolor='rgba(139,92,246,0.06)')
         )
         st.plotly_chart(fig_disc, use_container_width=True)
 
@@ -142,21 +178,26 @@ def render_review_rating(
         brand_avg_disc = brand_df['discount_pct'].mean()
 
         st.markdown(f"""
-        <div style='background: linear-gradient(135deg, #0F1C2E 0%, #0D1823 100%);
-                    border: 1px solid #1E2D40; border-radius: 12px; padding: 24px; margin-top: 10px;'>
-            <div style='font-family:Space Mono,monospace; font-size:11px; color:#F59E0B; font-weight:700; text-transform:uppercase;'>Brand Insights</div>
-            <div style='font-size:20px; font-weight:700; color:#F1F5F9; margin: 4px 0 16px 0;'>{selected_brand}</div>
-            <div style='display:flex; justify-content:space-between; margin-bottom:12px; border-bottom:1px solid #1E2D40; padding-bottom:10px;'>
+        <div class='glass-card' style='margin-top: 10px;'>
+            <div style='font-size:11px; color:#F59E0B; font-weight:700;
+                        text-transform:uppercase; letter-spacing:0.08em;'>Brand Insights</div>
+            <div style='font-size:20px; font-weight:800; color:#F8FAFC; margin: 4px 0 16px 0;
+                        background: linear-gradient(135deg, #F8FAFC, #A78BFA);
+                        -webkit-background-clip: text;
+                        -webkit-text-fill-color: transparent;'>{selected_brand}</div>
+            <div style='display:flex; justify-content:space-between; margin-bottom:12px;
+                        border-bottom:1px solid rgba(139,92,246,0.1); padding-bottom:10px;'>
                 <span style='color:#94A3B8; font-size:13px;'>Average Rating</span>
-                <span style='color:#F1F5F9; font-weight:700; font-size:14px;'>{brand_avg_rating:.2f} ★</span>
+                <span style='color:#F8FAFC; font-weight:700; font-size:14px;'>{brand_avg_rating:.2f} ★</span>
             </div>
-            <div style='display:flex; justify-content:space-between; margin-bottom:12px; border-bottom:1px solid #1E2D40; padding-bottom:10px;'>
+            <div style='display:flex; justify-content:space-between; margin-bottom:12px;
+                        border-bottom:1px solid rgba(139,92,246,0.1); padding-bottom:10px;'>
                 <span style='color:#94A3B8; font-size:13px;'>Average Discount</span>
-                <span style='color:#F1F5F9; font-weight:700; font-size:14px;'>{brand_avg_disc:.1f}%</span>
+                <span style='color:#F8FAFC; font-weight:700; font-size:14px;'>{brand_avg_disc:.1f}%</span>
             </div>
             <div style='display:flex; justify-content:space-between; margin-bottom:4px;'>
                 <span style='color:#94A3B8; font-size:13px;'>Total Rated Products</span>
-                <span style='color:#F1F5F9; font-weight:700; font-size:14px;'>{len(brand_df)}</span>
+                <span style='color:#F8FAFC; font-weight:700; font-size:14px;'>{len(brand_df)}</span>
             </div>
         </div>
         """, unsafe_allow_html=True)

@@ -39,8 +39,8 @@ data/raw/*.xls
 !data/raw/.gitkeep
 
 # ─── Streamlit ──────────────────────────────────────────
-.streamlit/
 .streamlit/secrets.toml
+!.streamlit/config.toml
 
 # ─── Testing ────────────────────────────────────────────
 .pytest_cache/
@@ -59,7 +59,6 @@ Thumbs.db
 # ─── Project Specific ───────────────────────────────────
 outputs/*.html
 temp/
-.streamlit/
 
 # ─── Credentials ────────────────────────────────────────
 # Never commit credentials!

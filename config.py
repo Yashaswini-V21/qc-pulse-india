@@ -1,51 +1,56 @@
 # ═══════════════════════════════════════════════════════════
-# CONFIG — QC Pulse India
+# CONFIG — QC Pulse India  ·  "Dark Intelligence" Design System
 # ═══════════════════════════════════════════════════════════
 
-# ─── COLORS ─────────────────────────────────────────────────
+# ─── COLORS — Premium Palette ───────────────────────────────
 COLORS = {
-    'background': '#0F172A',
-    'sidebar': '#1E293B',
-    'border': '#334155',
-    'text_light': '#F8FAFC',
-    'text_muted': '#94A3B8',
-    'text_dim': '#64748B',
-    'red': '#DC2626',
-    'orange': '#F97316',
-    'purple': '#6C63DB',
-    'amber': '#F59E0B',
-    'gray': '#64748B',
-    'green': '#1D9E75',
+    'space_black':    '#050810',
+    'deep_navy':      '#0A0F1E',
+    'card_bg':        '#0D1117',
+    'card_border':    'rgba(139, 92, 246, 0.15)',
+    'card_hover':     'rgba(139, 92, 246, 0.25)',
+    'purple_primary': '#8B5CF6',
+    'purple_light':   '#A78BFA',
+    'blue_accent':    '#3B82F6',
+    'teal_accent':    '#06B6D4',
+    'green_success':  '#10B981',
+    'red_alert':      '#EF4444',
+    'amber_warn':     '#F59E0B',
+    'text_primary':   '#F8FAFC',
+    'text_secondary': '#94A3B8',
+    'text_muted':     '#475569',
+    'glow_purple':    'rgba(139, 92, 246, 0.4)',
+    'glow_blue':      'rgba(59, 130, 246, 0.3)',
 }
 
 PLATFORM_COLORS = {
-    'BigBasket': '#6C63DB',
-    'Blinkit': '#DC2626',
-    'Zepto': '#1D9E75',
+    'BigBasket': '#B923FF',   # Neon Cyber Purple
+    'Blinkit':   '#FF3366',   # Hot Pink-Red
+    'Zepto':     '#00F5A0',   # Vivid Neon Mint Green
 }
 
 SEGMENT_COLORS = {
-    'Champion': '#DC2626',
-    'Loyal': '#F97316',
-    'Potential': '#6C63DB',
-    'At-Risk': '#F59E0B',
-    'Churned': '#64748B',
+    'Champion':  '#EC4899',   # Hot Pink
+    'Loyal':     '#3B82F6',   # Electric Blue
+    'Potential': '#10B981',   # Emerald Green
+    'At-Risk':   '#F59E0B',   # Amber Glow
+    'Churned':   '#EF4444',   # Cyber Red
 }
 
 CATEGORY_COLORS = {
-    'Dairy': 'rgba(220,38,38,0.6)',
-    'Fresh Produce': 'rgba(29,158,117,0.6)',
-    'Bakery & Grains': 'rgba(108,99,219,0.6)',
-    'Beverages': 'rgba(14,165,233,0.6)',
-    'Meat & Snacks': 'rgba(245,158,11,0.6)',
-    'Other': 'rgba(100,116,139,0.6)',
+    'Dairy':           'rgba(239,68,68,0.6)',
+    'Fresh Produce':   'rgba(16,185,129,0.6)',
+    'Bakery & Grains': 'rgba(139,92,246,0.6)',
+    'Beverages':       'rgba(6,182,212,0.6)',
+    'Meat & Snacks':   'rgba(245,158,11,0.6)',
+    'Other':           'rgba(71,85,105,0.6)',
 }
 
 # ─── LAYOUT ─────────────────────────────────────────────────
 CHART_HEIGHT = 380
-HEATMAP_HEIGHT = 450
-RETENTION_HEATMAP_HEIGHT = 560
-SANKEY_HEIGHT = 600
+HEATMAP_HEIGHT = 460
+RETENTION_HEATMAP_HEIGHT = 580
+SANKEY_HEIGHT = 620
 
 CHART_FONT_SIZE = 11
 CHART_FONT_SIZE_LARGE = 13
@@ -53,8 +58,8 @@ CHART_FONT_SIZE_LARGE = 13
 METRIC_PADDING = 16
 
 # ─── FONTS ──────────────────────────────────────────────────
-FONT_REGULAR = dict(color='white', size=CHART_FONT_SIZE)
-FONT_LARGE = dict(color='white', size=CHART_FONT_SIZE_LARGE)
+FONT_REGULAR = dict(color='#94A3B8', size=CHART_FONT_SIZE, family='Inter')
+FONT_LARGE = dict(color='#F8FAFC', size=CHART_FONT_SIZE_LARGE, family='Inter')
 
 # ─── MARGINS ────────────────────────────────────────────────
 MARGIN_COMPACT = dict(l=0, r=0, t=10, b=0)
@@ -129,5 +134,3 @@ BIGBASKET_REVIEW_CAT_MAP = {
     'Fruits & Vegetables': 'Fresh Produce', 'Eggs, Meat & Fish': 'Meat & Snacks',
     'Baby Care': 'Other'
 }
-
-
