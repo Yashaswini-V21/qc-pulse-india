@@ -447,7 +447,7 @@ Cleaned Data (data/clean/)
 ## 📞 Questions?
 
 - Check individual notebooks for more details on each dataset
-- Review `config.py` for data path configuration
+- Review `utils/config.py` for data path configuration
 - Enable Streamlit debug logging: `streamlit run app.py --logger.level=debug`
 
 ---

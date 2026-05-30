@@ -203,6 +203,6 @@ st.markdown("""
 </div>
 <div style='font-size:10px; color:#334155;
             text-align:center; padding:15px 0 5px 0;'>
-    Built for 15L+ D2C & Quick Commerce Analytics Roles · Yashaswini V
+    Quick Commerce Decision Intelligence Platform · Yashaswini V
 </div>
 """, unsafe_allow_html=True)

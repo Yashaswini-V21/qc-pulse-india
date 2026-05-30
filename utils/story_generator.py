@@ -10,7 +10,7 @@ No hardcoded numbers except avg_order_value = ₹350.
 
 import pandas as pd
 import numpy as np
-from config import AVG_ORDER_VALUE
+from utils.config import AVG_ORDER_VALUE
 from utils.simulator import calculate_platform_price_wins
 
 

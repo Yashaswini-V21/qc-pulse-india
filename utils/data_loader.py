@@ -3,7 +3,7 @@ import os
 import logging
 import pandas as pd
 import streamlit as st
-from config import DATA_FILES, ERROR_MESSAGES
+from utils.config import DATA_FILES, ERROR_MESSAGES
 from typing import Tuple
 
 # Configure logger
