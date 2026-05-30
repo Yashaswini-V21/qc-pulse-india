@@ -1,20 +1,6 @@
-# 🛒 QC Pulse India
+# 🛒 Quick Commerce Pulse India
 
-<p align="center">
-  <img src="https://img.shields.io/badge/Python-3.9+-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python">
-  <img src="https://img.shields.io/badge/Streamlit-1.28+-FF4B4B?style=for-the-badge&logo=Streamlit&logoColor=white" alt="Streamlit">
-  <img src="https://img.shields.io/badge/Plotly-5.17+-3F4F75?style=for-the-badge&logo=plotly&logoColor=white" alt="Plotly">
-  <img src="https://img.shields.io/badge/Pandas-2.0+-150458?style=for-the-badge&logo=pandas&logoColor=white" alt="Pandas">
-  <img src="https://img.shields.io/badge/Pytest-10_tests-0A9EDC?style=for-the-badge&logo=pytest&logoColor=white" alt="Pytest">
-</p>
-
-<p align="center">
-  <b>Quick Commerce Decision Intelligence Platform</b>
-  <br>
-  <sub>Analytical benchmarking framework for modern multi-platform delivery ecosystems</sub>
-  <br>
-  <code>Blinkit</code> · <code>Zepto</code> · <code>BigBasket</code> — pricing indices, cohort retention, and market basket affinities
-</p>
+An advanced decision-intelligence and analytical benchmarking framework that processes catalog pricing, customer cohort retention, and market basket affinities across **Blinkit**, **Zepto**, and **BigBasket**.
 
 ---
 
@@ -34,8 +20,6 @@
 ---
 
 ## 🎯 Platform Objectives & Key Features
-
-**QC Pulse India** is an advanced decision-intelligence framework that processes transactional datasets to model competitive pricing strategies, customer retention dynamics, and purchase behaviors.
 
 * **🎯 Scenario Sandbox Simulators**: An interactive simulation engine enabling multi-variable modeling:
   * **Win-Back Campaign ROI**: Projects re-engagement returns based on segment volume, campaign budgets, and discount incentives.
@@ -219,8 +203,4 @@ docker run -d -p 8501:8501 qc-pulse-india:latest
 
 ---
 
-<p align="center">
-  <b>Built by Yashaswini V</b> · May 2026
-  <br>
-  <sub>Unified Decision Intelligence Framework for Quick Commerce Analytics</sub>
-</p>
+Developed by **Yashaswini V** • May 2026. Coded in compliance with quick-commerce transaction analytics benchmarks.
