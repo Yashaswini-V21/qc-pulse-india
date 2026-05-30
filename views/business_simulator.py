@@ -1,4 +1,4 @@
-"""Business Decision Simulator page — Premium "Dark Intelligence" design."""
+"""Business Decision Simulator page — Premium dark dashboard design."""
 import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
@@ -9,7 +9,104 @@ from utils.simulator import (
     simulate_price_change,
     simulate_retention_improvement,
 )
-from utils.charts import apply_premium_theme
+
+
+# ── Design tokens ────────────────────────────────────────────
+_BG       = "#060B14"
+_CARD_BG  = "linear-gradient(135deg, #0F1C2E, #0D1823)"
+_BORDER   = "linear-gradient(90deg, #DC2626, #7C3AED)"
+_RED      = "#DC2626"
+_PURPLE   = "#7C3AED"
+_GREEN    = "#1D9E75"
+_LABEL_C  = "#64748B"
+_VALUE_C  = "#F1F5F9"
+_PLOT_BG  = "#0D1823"
+_HOVER_BG = "#0F1C2E"
+_HOVER_BD = "#1E2D40"
+
+
+def _kpi_card(label: str, value: str, subtext: str = "", border: str = _BORDER, value_color: str = _VALUE_C) -> str:
+    """Render a single simulator KPI card as HTML."""
+    subtext_html = ""
+    if subtext:
+        subtext_html = (
+            f"<div style='font-family:\"Space Mono\",monospace;font-size:10px;"
+            f"color:{_LABEL_C};margin-top:6px;'>{subtext}</div>"
+        )
+    return f"""
+    <div style="
+        background: {_CARD_BG};
+        border-radius: 14px;
+        padding: 20px 22px;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    ">
+        <div style="
+            position:absolute; top:0; left:0; right:0; height:2px;
+            background: {border};
+        "></div>
+        <div style="
+            font-family:'Space Mono',monospace;
+            font-size:10px; text-transform:uppercase;
+            color:{_LABEL_C}; letter-spacing:0.12em;
+            margin-bottom:8px;
+        ">{label}</div>
+        <div style="
+            font-family:'DM Sans',sans-serif;
+            font-weight:700; font-size:28px;
+            color:{value_color}; line-height:1.1;
+        ">{value}</div>
+        {subtext_html}
+    </div>
+    """
+
+
+def _recommendation_card(title: str, text: str, border: str = _BORDER, accent: str = _PURPLE) -> str:
+    """Render a premium bottom recommendation/insight card."""
+    return f"""
+    <div style="
+        background: {_CARD_BG};
+        border-radius: 14px;
+        padding: 22px 24px;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    ">
+        <div style="
+            position:absolute; top:0; left:0; right:0; height:2px;
+            background: {border};
+        "></div>
+        <div style="
+            font-family:'Space Mono',monospace;
+            font-size:10px; text-transform:uppercase;
+            color:{accent}; letter-spacing:0.12em;
+            margin-bottom:10px;
+            font-weight:700;
+        ">{title}</div>
+        <div style="
+            font-family:'DM Sans',sans-serif;
+            font-size:13px; color:#CBD5E1;
+            line-height:1.7;
+        ">{text}</div>
+    </div>
+    """
+
+
+def _apply_custom_theme(fig, height=220, title=""):
+    """Applies premium dark mode styles to a Plotly figure."""
+    fig.update_layout(
+        plot_bgcolor=_PLOT_BG,
+        paper_bgcolor=_PLOT_BG,
+        font=dict(family='DM Sans', color='#94A3B8', size=11),
+        margin=dict(l=10, r=10, t=44 if title else 10, b=10),
+        height=height,
+        xaxis=dict(color='#94A3B8', gridcolor='#1E2D40', linecolor='#1E2D40'),
+        yaxis=dict(color='#94A3B8', gridcolor='#1E2D40', linecolor='#1E2D40'),
+        hoverlabel=dict(bgcolor=_HOVER_BG, bordercolor=_HOVER_BD, font=dict(color='white', size=12)),
+    )
+    if title:
+        fig.update_layout(title=dict(text=title, font=dict(color='#94A3B8', size=12)))
 
 
 def render_business_simulator(
@@ -17,44 +114,42 @@ def render_business_simulator(
     cohort: pd.DataFrame,
     pm: pd.DataFrame,
 ) -> None:
-    """Renders Business Simulator page with premium design."""
-    # ── CYBER HEADER ──
-    st.markdown("""
-    <div style="padding: 24px 0 16px; animation: fadeIn 0.8s ease;">
-      <div style="display:flex; align-items:center; gap:14px; margin-bottom:12px;">
-        <div style="
-          width:44px; height:44px;
-          background: linear-gradient(135deg, #EF4444, #B923FF);
-          border-radius:12px;
-          display:flex; align-items:center; justify-content:center;
-          font-size:22px;
-          box-shadow: 0 8px 24px rgba(239,68,68,0.3);
-        ">🎯</div>
-        <div>
-          <div class="stat-badge" style="margin:0; background:rgba(239,68,68,0.15); border-color:rgba(239,68,68,0.35); color:#FCA5A5; box-shadow:0 0 15px rgba(239,68,68,0.15);">DECISION ENGINE</div>
-          <div class="live-badge" style="margin-top:4px;">
-            <span class="status-dot status-live"></span>
-            Simulation Sandbox Active
-          </div>
-        </div>
-      </div>
-      <h1 style="
-        font-size:40px !important;
-        font-weight:900 !important;
-        letter-spacing:-0.03em !important;
-        line-height:1.1 !important;
-        margin:0 0 8px !important;
-        background: linear-gradient(135deg, #FFFFFF 0%, #FCA5A5 50%, #B923FF 100%) !important;
-        -webkit-background-clip: text !important;
-        -webkit-text-fill-color: transparent !important;
-      ">Business Decision Simulator</h1>
-      <p style="
-        font-size:14.5px; color:#64748B;
-        font-weight:400; margin:0 0 20px;
-        line-height:1.6;
-      ">Model real business decisions — what-if scenarios backed by your actual data. Every number here is computed from the 38,765 real transactions in this dataset.</p>
+    """Renders Business Simulator page with premium recruiter-stopping design."""
+
+    # ── BADGE ──
+    st.markdown(f"""
+    <div style="padding:28px 0 6px;">
+        <span style="
+            display:inline-block;
+            font-family:'Space Mono',monospace;
+            font-size:11px; font-weight:700;
+            text-transform:uppercase; letter-spacing:0.12em;
+            color:{_RED};
+            background:rgba(220,38,38,0.1);
+            border:1px solid rgba(220,38,38,0.3);
+            padding:5px 14px; border-radius:99px;
+        ">● DECISION ENGINE</span>
     </div>
     """, unsafe_allow_html=True)
+
+    # ── TITLE + SUBTITLE ──
+    st.markdown(f"""
+    <h1 style="
+        font-family:'DM Sans',sans-serif !important;
+        font-size:28px !important; font-weight:700 !important;
+        color:#F1F5F9 !important;
+        -webkit-text-fill-color:#F1F5F9 !important;
+        background:none !important;
+        margin:10px 0 6px !important;
+        letter-spacing:-0.02em !important;
+    ">Business Decision Simulator</h1>
+    <p style="
+        font-family:'DM Sans',sans-serif;
+        font-size:14px; color:{_LABEL_C};
+        margin:0 0 28px;
+    ">Model real business decisions — what-if scenarios backed by your actual data</p>
+    """, unsafe_allow_html=True)
+
     st.markdown("---")
 
     tab1, tab2, tab3 = st.tabs([
@@ -68,7 +163,7 @@ def render_business_simulator(
         st.markdown("<br>", unsafe_allow_html=True)
         st.markdown("<p class='section-label'>Win-Back Campaign Simulator</p>", unsafe_allow_html=True)
         st.markdown(
-            "<p style='color:#64748B;font-size:13px;margin-bottom:20px'>"
+            f"<p style='color:{_LABEL_C};font-family:\"DM Sans\",sans-serif;font-size:13px;margin-bottom:20px'>"
             "Model the ROI of an email/SMS re-engagement campaign targeting inactive segments. "
             "Recovery rate is derived from your actual cohort Month-1 retention data.</p>",
             unsafe_allow_html=True
@@ -77,16 +172,13 @@ def render_business_simulator(
         col_ctrl, col_res = st.columns([1, 1.6])
 
         with col_ctrl:
-            st.markdown(
-                "<div class='glass-card'>",
-                unsafe_allow_html=True
-            )
+            st.markdown("<div class='glass-card'>", unsafe_allow_html=True)
             wb_segment = st.selectbox("Target Segment", ["Churned", "At-Risk"], key="wb_seg")
             seg_size = len(rfm[rfm['segment'] == wb_segment])
             st.markdown(
-                f"<p style='color:#475569;font-size:11px;"
-                f"margin-top:-8px;margin-bottom:12px'>"
-                f"Segment: {seg_size:,} customers available</p>",
+                f"<p style='color:{_LABEL_C};font-family:\"Space Mono\",monospace;font-size:10px;"
+                f"margin-top:-8px;margin-bottom:12px;text-transform:uppercase;'>"
+                f"Segment size: {seg_size:,} customers</p>",
                 unsafe_allow_html=True
             )
             wb_customers = st.slider("Customers to Contact", 50, max(50, seg_size), min(300, seg_size), key="wb_cust")
@@ -101,85 +193,61 @@ def render_business_simulator(
                 segment_targeted=wb_segment, customers_targeted=wb_customers,
                 campaign_budget_inr=wb_budget, discount_offered_pct=wb_discount,
             )
-            r_color = "#10B981" if wb_res['roi_pct'] > 0 else "#EF4444"
+            r_color = _GREEN if wb_res['roi_pct'] > 0 else _RED
 
-            st.markdown(f"""
-            <div style='display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;'>
-                <div style='background:linear-gradient(135deg,rgba(13,17,23,0.9),rgba(8,12,24,0.8));
-                            border:1px solid rgba(139,92,246,0.12);border-radius:16px;padding:18px;
-                            backdrop-filter:blur(20px);'>
-                    <div style='font-size:9px;color:#475569;text-transform:uppercase;letter-spacing:.1em;
-                                margin-bottom:6px;font-weight:700;'>Customers Recovered</div>
-                    <div style='font-size:28px;font-weight:800;
-                                background:linear-gradient(135deg,#F8FAFC,#A78BFA);
-                                -webkit-background-clip:text;-webkit-text-fill-color:transparent;'>
-                        {wb_res["customers_recovered"]:,}</div>
-                    <div style='font-size:11px;color:#475569;margin-top:4px;'>
-                        {wb_res["recovery_rate_pct"]}% rate (+{wb_res["discount_boost_pp"]}pp from discount)</div>
-                </div>
-                <div style='background:linear-gradient(135deg,rgba(13,17,23,0.9),rgba(8,12,24,0.8));
-                            border:1px solid rgba(139,92,246,0.12);border-radius:16px;padding:18px;
-                            backdrop-filter:blur(20px);'>
-                    <div style='font-size:9px;color:#475569;text-transform:uppercase;letter-spacing:.1em;
-                                margin-bottom:6px;font-weight:700;'>Revenue Gained (3 months)</div>
-                    <div style='font-size:28px;font-weight:800;
-                                background:linear-gradient(135deg,#F8FAFC,#A78BFA);
-                                -webkit-background-clip:text;-webkit-text-fill-color:transparent;'>
-                        &#8377;{wb_res["revenue_gained"]:,.0f}</div>
-                    <div style='font-size:11px;color:#475569;margin-top:4px;'>
-                        2 orders/month (estimated win-back) * &#8377;350 basket</div>
-                </div>
-                <div style='background:linear-gradient(135deg,rgba(13,17,23,0.9),rgba(8,12,24,0.8));
-                            border:1px solid {"rgba(16,185,129,0.3)" if wb_res["roi_pct"] > 0 else "rgba(239,68,68,0.3)"};
-                            border-radius:16px;padding:18px;backdrop-filter:blur(20px);'>
-                    <div style='font-size:9px;color:#475569;text-transform:uppercase;letter-spacing:.1em;
-                                margin-bottom:6px;font-weight:700;'>Campaign ROI</div>
-                    <div style='font-size:28px;font-weight:800;color:{r_color};'>
-                        {wb_res["roi_pct"]:+.1f}%</div>
-                    <div style='font-size:11px;color:#475569;margin-top:4px;'>
-                        vs &#8377;{wb_budget:,} budget spent</div>
-                </div>
-                <div style='background:linear-gradient(135deg,rgba(13,17,23,0.9),rgba(8,12,24,0.8));
-                            border:1px solid rgba(139,92,246,0.12);border-radius:16px;padding:18px;
-                            backdrop-filter:blur(20px);'>
-                    <div style='font-size:9px;color:#475569;text-transform:uppercase;letter-spacing:.1em;
-                                margin-bottom:6px;font-weight:700;'>Cost Per Recovery</div>
-                    <div style='font-size:28px;font-weight:800;
-                                background:linear-gradient(135deg,#F8FAFC,#A78BFA);
-                                -webkit-background-clip:text;-webkit-text-fill-color:transparent;'>
-                        &#8377;{wb_res["cost_per_recovered"]:,.0f}</div>
-                    <div style='font-size:11px;color:#475569;margin-top:4px;'>per recovered customer</div>
-                </div>
-            </div>
-            """, unsafe_allow_html=True)
+            col_grid1, col_grid2 = st.columns(2)
+            with col_grid1:
+                st.markdown(_kpi_card(
+                    "Customers Recovered",
+                    f"{wb_res['customers_recovered']:,}",
+                    f"{wb_res['recovery_rate_pct']}% rate (+{wb_res['discount_boost_pp']}pp discount)"
+                ), unsafe_allow_html=True)
+            with col_grid2:
+                st.markdown(_kpi_card(
+                    "Revenue Gained (3m)",
+                    f"₹{wb_res['revenue_gained']:,.0f}",
+                    "2 orders/month @ ₹350 basket estimate"
+                ), unsafe_allow_html=True)
+
+            st.markdown("<div style='margin-top:12px;'></div>", unsafe_allow_html=True)
+
+            col_grid3, col_grid4 = st.columns(2)
+            with col_grid3:
+                st.markdown(_kpi_card(
+                    "Campaign ROI",
+                    f"{wb_res['roi_pct']:+.1f}%",
+                    f"vs ₹{wb_budget:,} budget spent",
+                    value_color=r_color
+                ), unsafe_allow_html=True)
+            with col_grid4:
+                st.markdown(_kpi_card(
+                    "Cost Per Recovery",
+                    f"₹{wb_res['cost_per_recovered']:,.0f}",
+                    "per recovered customer"
+                ), unsafe_allow_html=True)
+
+            st.markdown("<br>", unsafe_allow_html=True)
 
             payback = wb_res['payback_months']
             payback_txt = f"{payback:.1f} months" if payback < 90 else "Not profitable at this budget"
-            st.markdown(f"""
-            <div style='background:linear-gradient(135deg,rgba(13,17,23,0.9),rgba(8,12,24,0.8));
-                        border:1px solid rgba(139,92,246,0.25);border-radius:16px;padding:18px;
-                        backdrop-filter:blur(20px);'>
-                <div style='font-size:9px;color:#8B5CF6;
-                            font-weight:700;text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px;'>
-                    Simulation Recommendation</div>
-                <div style='color:#CBD5E1;font-size:13px;line-height:1.7;'>
-                    Targeting <b>{wb_customers:,} {wb_segment}</b> customers with a
-                    <b>&#8377;{wb_budget:,}</b> campaign and <b>{wb_discount}% discount</b> coupon
-                    yields <b>{wb_res["customers_recovered"]:,} recovered customers</b> and
-                    <b>&#8377;{wb_res["revenue_gained"]:,.0f}</b> in 3-month revenue.
-                    Payback period: <b>{payback_txt}</b>.
-                    Benchmark against <b>{wb_res["recommended_cohort"]}</b> cohort
-                    ({wb_res["base_retention_rate"]}% baseline retention).
-                </div>
-            </div>
-            """, unsafe_allow_html=True)
+
+            rec_text = f"""
+            Targeting <b>{wb_customers:,} {wb_segment}</b> customers with a
+            <b>₹{wb_budget:,}</b> campaign and <b>{wb_discount}% discount</b> coupon
+            yields <b>{wb_res["customers_recovered"]:,} recovered customers</b> and
+            <b>₹{wb_res["revenue_gained"]:,.0f}</b> in 3-month revenue.<br>
+            Payback period: <b>{payback_txt}</b>.<br>
+            Benchmark against <b>{wb_res["recommended_cohort"]}</b> cohort
+            ({wb_res["base_retention_rate"]}% baseline retention).
+            """
+            st.markdown(_recommendation_card("Simulation Recommendation", rec_text, border=_BORDER, accent=_PURPLE), unsafe_allow_html=True)
 
     # ── TAB 2: PRICE CHANGE IMPACT ──
     with tab2:
         st.markdown("<br>", unsafe_allow_html=True)
         st.markdown("<p class='section-label'>Price Change Impact Simulator</p>", unsafe_allow_html=True)
         st.markdown(
-            "<p style='color:#64748B;font-size:13px;margin-bottom:20px'>"
+            f"<p style='color:{_LABEL_C};font-family:\"DM Sans\",sans-serif;font-size:13px;margin-bottom:20px'>"
             "Model how a pricing decision shifts competitive position and impacts revenue. "
             "Uses standard retail price elasticity = -2.0 (20% volume gain per 10% price drop).</p>",
             unsafe_allow_html=True
@@ -210,99 +278,146 @@ def render_business_simulator(
             if pc_res.get('error'):
                 st.warning(f"Data unavailable: {pc_res['error']}")
             else:
-                direction_color = "#10B981" if pc_discount_change > 0 else "#EF4444"
-                rev_color = "#10B981" if pc_res['revenue_impact'] > 0 else "#EF4444"
+                direction_color = _GREEN if pc_discount_change > 0 else _RED
+                rev_color = _GREEN if pc_res['revenue_impact'] > 0 else _RED
                 rev_sign = "+" if pc_res['revenue_impact'] >= 0 else ""
 
-                st.markdown(f"""
-                <div style='display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:14px;'>
-                    <div style='background:linear-gradient(135deg,rgba(13,17,23,0.9),rgba(8,12,24,0.8));
-                                border:1px solid rgba(139,92,246,0.12);border-radius:14px;padding:16px;
-                                backdrop-filter:blur(20px);'>
-                        <div style='font-size:9px;color:#475569;text-transform:uppercase;margin-bottom:4px;
-                                    font-weight:700;'>Current Price</div>
-                        <div style='font-size:22px;font-weight:800;
-                                    background:linear-gradient(135deg,#F8FAFC,#A78BFA);
-                                    -webkit-background-clip:text;-webkit-text-fill-color:transparent;'>
-                            &#8377;{pc_res["current_price"]:.2f}</div>
-                        <div style='font-size:10px;color:#475569;margin-top:3px;'>
-                            Market avg: &#8377;{pc_res["market_avg"]:.2f}</div>
-                    </div>
-                    <div style='background:linear-gradient(135deg,rgba(13,17,23,0.9),rgba(8,12,24,0.8));
-                                border:1px solid {direction_color}40;border-radius:14px;padding:16px;
-                                backdrop-filter:blur(20px);'>
-                        <div style='font-size:9px;color:#475569;text-transform:uppercase;margin-bottom:4px;
-                                    font-weight:700;'>New Price</div>
-                        <div style='font-size:22px;font-weight:800;color:{direction_color};'>
-                            &#8377;{pc_res["new_price"]:.2f}</div>
-                        <div style='font-size:10px;color:#475569;margin-top:3px;'>
-                            {pc_discount_change:+.0f}% {"cut" if pc_discount_change > 0 else "increase"}</div>
-                    </div>
-                    <div style='background:linear-gradient(135deg,rgba(13,17,23,0.9),rgba(8,12,24,0.8));
-                                border:1px solid {rev_color}40;border-radius:14px;padding:16px;
-                                backdrop-filter:blur(20px);'>
-                        <div style='font-size:9px;color:#475569;text-transform:uppercase;margin-bottom:4px;
-                                    font-weight:700;'>Revenue Impact</div>
-                        <div style='font-size:22px;font-weight:800;color:{rev_color};'>
-                            {rev_sign}&#8377;{abs(pc_res["revenue_impact"]):,.0f}</div>
-                        <div style='font-size:10px;color:#475569;margin-top:3px;'>
-                            {pc_customers:,} customers affected</div>
-                    </div>
-                </div>
-                <div style='display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;'>
-                    <div style='background:linear-gradient(135deg,rgba(13,17,23,0.9),rgba(8,12,24,0.8));
-                                border:1px solid rgba(139,92,246,0.12);border-radius:14px;padding:16px;
-                                backdrop-filter:blur(20px);'>
-                        <div style='font-size:9px;color:#475569;text-transform:uppercase;margin-bottom:4px;
-                                    font-weight:700;'>Gap Before</div>
-                        <div style='font-size:20px;font-weight:800;
-                                    color:{"#EF4444" if pc_res["gap_before"] > 0 else "#10B981"};'>
-                            {pc_res["gap_before"]:+.1f}%</div>
-                        <div style='font-size:10px;color:#475569;margin-top:3px;'>
-                            vs market average — {pc_res["position_before"]}</div>
-                    </div>
-                    <div style='background:linear-gradient(135deg,rgba(13,17,23,0.9),rgba(8,12,24,0.8));
-                                border:1px solid {direction_color}40;border-radius:14px;padding:16px;
-                                backdrop-filter:blur(20px);'>
-                        <div style='font-size:9px;color:#475569;text-transform:uppercase;margin-bottom:4px;
-                                    font-weight:700;'>Gap After {pc_res["position_arrow"]}</div>
-                        <div style='font-size:20px;font-weight:800;
-                                    color:{"#EF4444" if pc_res["gap_after"] > 0 else "#10B981"};'>
-                            {pc_res["gap_after"]:+.1f}%</div>
-                        <div style='font-size:10px;color:#475569;margin-top:3px;'>
-                            vs market average — {pc_res["position_after"]}</div>
-                    </div>
-                </div>
-                """, unsafe_allow_html=True)
+                col_grid1, col_grid2, col_grid3 = st.columns(3)
+                with col_grid1:
+                    st.markdown(_kpi_card(
+                        "Current Price",
+                        f"₹{pc_res['current_price']:.2f}",
+                        f"Market avg: ₹{pc_res['market_avg']:.2f}"
+                    ), unsafe_allow_html=True)
+                with col_grid2:
+                    st.markdown(_kpi_card(
+                        "New Price",
+                        f"₹{pc_res['new_price']:.2f}",
+                        f"{pc_discount_change:+.0f}% {'cut' if pc_discount_change > 0 else 'increase'}",
+                        value_color=direction_color
+                    ), unsafe_allow_html=True)
+                with col_grid3:
+                    st.markdown(_kpi_card(
+                        "Revenue Impact",
+                        f"{rev_sign}₹{abs(pc_res['revenue_impact']):,.0f}",
+                        f"{pc_customers:,} customers",
+                        value_color=rev_color
+                    ), unsafe_allow_html=True)
+
+                st.markdown("<div style='margin-top:12px;'></div>", unsafe_allow_html=True)
+
+                col_grid4, col_grid5 = st.columns(2)
+                with col_grid4:
+                    st.markdown(_kpi_card(
+                        "Gap Before",
+                        f"{pc_res['gap_before']:+.1f}%",
+                        f"vs market avg — {pc_res['position_before']}",
+                        value_color=_RED if pc_res["gap_before"] > 0 else _GREEN
+                    ), unsafe_allow_html=True)
+                with col_grid5:
+                    st.markdown(_kpi_card(
+                        f"Gap After {pc_res['position_arrow']}",
+                        f"{pc_res['gap_after']:+.1f}%",
+                        f"vs market avg — {pc_res['position_after']}",
+                        value_color=_RED if pc_res["gap_after"] > 0 else _GREEN
+                    ), unsafe_allow_html=True)
+
+                st.markdown("<br>", unsafe_allow_html=True)
 
                 fig_gap = go.Figure()
                 fig_gap.add_trace(go.Bar(
                     x=['Before', 'After'],
                     y=[pc_res['gap_before'], pc_res['gap_after']],
-                    marker_color=['#EF4444' if pc_res['gap_before'] > 0 else '#10B981',
-                                  '#EF4444' if pc_res['gap_after'] > 0 else '#10B981'],
+                    marker_color=[_RED if pc_res['gap_before'] > 0 else _GREEN,
+                                  _RED if pc_res['gap_after'] > 0 else _GREEN],
                     text=[f"{pc_res['gap_before']:+.1f}%", f"{pc_res['gap_after']:+.1f}%"],
                     textposition='outside',
-                    textfont=dict(color='#94A3B8', size=13, family='Inter'),
+                    textfont=dict(color='#94A3B8', size=13, family='DM Sans'),
                     marker_line_width=0,
                 ))
                 fig_gap.add_hline(y=0, line_color='#475569', line_dash='dash', line_width=1)
-                apply_premium_theme(fig_gap, height=220)
+                _apply_custom_theme(fig_gap, height=220, title='Price Gap vs Market Average (%)')
                 fig_gap.update_layout(
-                    title=dict(text='Price Gap vs Market Average (%)', font=dict(color='#94A3B8', size=12)),
-                    yaxis=dict(title='Gap %', color='#94A3B8',
-                               gridcolor='rgba(139,92,246,0.06)', ticksuffix='%'),
-                    xaxis=dict(color='#94A3B8'),
+                    yaxis=dict(ticksuffix='%'),
                     margin=dict(l=10, r=10, t=44, b=10),
                 )
                 st.plotly_chart(fig_gap, use_container_width=True)
+
+                # ── PRICE ELASTICITY OPTIMIZATION CURVE ──
+                st.markdown("<div style='margin-top:20px;'></div>", unsafe_allow_html=True)
+                st.markdown(f"""
+                <div style="font-family:'Space Mono',monospace;font-size:10px;
+                    text-transform:uppercase;color:{_LABEL_C};letter-spacing:0.12em;
+                    margin-bottom:12px;">📈 Dynamic Price Elasticity Curve (Revenue Optimization)</div>
+                """, unsafe_allow_html=True)
+
+                # Generate data points from -30% to +30% price change
+                price_changes = list(range(-30, 31, 2))
+                base_rev = pc_res['current_price'] * pc_customers
+
+                rev_curves = []
+                for dp in price_changes:
+                    f_p = 1 - dp / 100.0
+                    f_q = 1 + 2.0 * dp / 100.0
+                    r_val = base_rev * f_p * f_q
+                    rev_curves.append(r_val)
+
+                fig_curve = go.Figure()
+
+                # Plot dynamic revenue path
+                fig_curve.add_trace(go.Scatter(
+                    x=price_changes, y=rev_curves,
+                    mode='lines',
+                    line=dict(color='#F97316', width=3),
+                    fill='tozeroy',
+                    fillcolor='rgba(249,115,22,0.06)',
+                    name='Projected Revenue',
+                    hoverinfo='x+y',
+                ))
+
+                # Plot active slider position
+                active_fp = 1 - pc_discount_change / 100.0
+                active_fq = 1 + 2.0 * pc_discount_change / 100.0
+                active_rev = base_rev * active_fp * active_fq
+                fig_curve.add_trace(go.Scatter(
+                    x=[pc_discount_change], y=[active_rev],
+                    mode='markers',
+                    marker=dict(color='#FF3366', size=12, line=dict(color='#060B14', width=2)),
+                    name='Current Position',
+                    hoverinfo='text',
+                    text=f"Selected: {pc_discount_change:+.0f}% (₹{active_rev:,.0f})",
+                ))
+
+                # Plot theoretical optimal position at +25%
+                optimal_fp = 1 - 25 / 100.0
+                optimal_fq = 1 + 2.0 * 25 / 100.0
+                optimal_rev = base_rev * optimal_fp * optimal_fq
+                fig_curve.add_trace(go.Scatter(
+                    x=[25], y=[optimal_rev],
+                    mode='markers',
+                    marker=dict(color='#00F5A0', size=12, symbol='star', line=dict(color='#060B14', width=2)),
+                    name='Optimal Point (25% Discount)',
+                    hoverinfo='text',
+                    text=f"Optimal: +25% Cut (₹{optimal_rev:,.0f})",
+                ))
+
+                _apply_custom_theme(fig_curve, height=240)
+                fig_curve.update_layout(
+                    xaxis=dict(title='Price Cut / Discount (%)', ticksuffix='%', gridcolor='#1E2D40'),
+                    yaxis=dict(title='Projected Revenue (₹)', gridcolor='#1E2D40'),
+                    showlegend=True,
+                    legend=dict(x=0.02, y=0.98, bgcolor='rgba(0,0,0,0)'),
+                    margin=dict(l=10, r=10, t=10, b=10),
+                )
+                st.plotly_chart(fig_curve, use_container_width=True)
+
 
     # ── TAB 3: RETENTION IMPROVEMENT ──
     with tab3:
         st.markdown("<br>", unsafe_allow_html=True)
         st.markdown("<p class='section-label'>Retention Improvement Simulator</p>", unsafe_allow_html=True)
         st.markdown(
-            "<p style='color:#64748B;font-size:13px;margin-bottom:20px'>"
+            f"<p style='color:{_LABEL_C};font-family:\"DM Sans\",sans-serif;font-size:13px;margin-bottom:20px'>"
             "Quantify the LTV and ROI impact of improving cohort retention at a target month. "
             "Recovered customers are assumed to achieve 30% of Champion annual LTV.</p>",
             unsafe_allow_html=True
@@ -327,60 +442,48 @@ def render_business_simulator(
                 target_month=ri_month, improvement_pct=ri_improvement,
                 intervention_cost_inr=ri_cost,
             )
-            roi_color = "#10B981" if ri_res['roi_pct'] > 0 else "#EF4444"
+            roi_color = _GREEN if ri_res['roi_pct'] > 0 else _RED
 
-            st.markdown(f"""
-            <div style='display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;'>
-                <div style='background:linear-gradient(135deg,rgba(13,17,23,0.9),rgba(8,12,24,0.8));
-                            border:1px solid rgba(139,92,246,0.12);border-radius:16px;padding:18px;
-                            backdrop-filter:blur(20px);'>
-                    <div style='font-size:9px;color:#475569;text-transform:uppercase;letter-spacing:.1em;
-                                margin-bottom:6px;font-weight:700;'>Current M{ri_month} Rate</div>
-                    <div style='font-size:26px;font-weight:800;
-                                background:linear-gradient(135deg,#F8FAFC,#A78BFA);
-                                -webkit-background-clip:text;-webkit-text-fill-color:transparent;'>
-                        {ri_res["current_rate"]}%</div>
-                    <div style='font-size:11px;color:#475569;margin-top:4px;'>avg across all 24 cohorts</div>
-                </div>
-                <div style='background:linear-gradient(135deg,rgba(13,17,23,0.9),rgba(8,12,24,0.8));
-                            border:1px solid rgba(16,185,129,0.3);border-radius:16px;padding:18px;
-                            backdrop-filter:blur(20px);'>
-                    <div style='font-size:9px;color:#475569;text-transform:uppercase;letter-spacing:.1em;
-                                margin-bottom:6px;font-weight:700;'>Target M{ri_month} Rate</div>
-                    <div style='font-size:26px;font-weight:800;color:#10B981;'>{ri_res["new_rate"]}%</div>
-                    <div style='font-size:11px;color:#475569;margin-top:4px;'>
-                        best cohort {ri_res["best_cohort"]}: {ri_res["best_cohort_rate"]}%</div>
-                </div>
-                <div style='background:linear-gradient(135deg,rgba(13,17,23,0.9),rgba(8,12,24,0.8));
-                            border:1px solid rgba(139,92,246,0.12);border-radius:16px;padding:18px;
-                            backdrop-filter:blur(20px);'>
-                    <div style='font-size:9px;color:#475569;text-transform:uppercase;letter-spacing:.1em;
-                                margin-bottom:6px;font-weight:700;'>Additional Retained</div>
-                    <div style='font-size:26px;font-weight:800;
-                                background:linear-gradient(135deg,#F8FAFC,#A78BFA);
-                                -webkit-background-clip:text;-webkit-text-fill-color:transparent;'>
-                        {ri_res["additional_retained"]:,}</div>
-                    <div style='font-size:11px;color:#475569;margin-top:4px;'>customers saved per cohort cycle</div>
-                </div>
-                <div style='background:linear-gradient(135deg,rgba(13,17,23,0.9),rgba(8,12,24,0.8));
-                            border:1px solid {roi_color}40;border-radius:16px;padding:18px;
-                            backdrop-filter:blur(20px);'>
-                    <div style='font-size:9px;color:#475569;text-transform:uppercase;letter-spacing:.1em;
-                                margin-bottom:6px;font-weight:700;'>LTV Gained (Annual)</div>
-                    <div style='font-size:26px;font-weight:800;color:{roi_color};'>
-                        &#8377;{ri_res["ltv_gained"]:,.0f}</div>
-                    <div style='font-size:11px;color:#475569;margin-top:4px;'>
-                        ROI: {ri_res["roi_pct"]:+.1f}% vs &#8377;{ri_cost:,} cost</div>
-                </div>
-            </div>
-            """, unsafe_allow_html=True)
+            col_grid1, col_grid2 = st.columns(2)
+            with col_grid1:
+                st.markdown(_kpi_card(
+                    f"Current M{ri_month} Rate",
+                    f"{ri_res['current_rate']}%",
+                    "avg across all 24 cohorts"
+                ), unsafe_allow_html=True)
+            with col_grid2:
+                st.markdown(_kpi_card(
+                    f"Target M{ri_month} Rate",
+                    f"{ri_res['new_rate']}%",
+                    f"best cohort {ri_res['best_cohort']}: {ri_res['best_cohort_rate']}%",
+                    value_color=_GREEN
+                ), unsafe_allow_html=True)
+
+            st.markdown("<div style='margin-top:12px;'></div>", unsafe_allow_html=True)
+
+            col_grid3, col_grid4 = st.columns(2)
+            with col_grid3:
+                st.markdown(_kpi_card(
+                    "Additional Retained",
+                    f"{ri_res['additional_retained']:,}",
+                    "customers saved per cohort cycle"
+                ), unsafe_allow_html=True)
+            with col_grid4:
+                st.markdown(_kpi_card(
+                    "LTV Gained (Annual)",
+                    f"₹{ri_res['ltv_gained']:,.0f}",
+                    f"ROI: {ri_res['roi_pct']:+.1f}% vs ₹{ri_cost:,} cost",
+                    value_color=roi_color
+                ), unsafe_allow_html=True)
+
+            st.markdown("<br>", unsafe_allow_html=True)
 
             fig_gauge = go.Figure(go.Indicator(
                 mode="gauge+number+delta",
                 value=ri_res['roi_pct'],
                 delta={'reference': 0, 'suffix': '%',
-                       'increasing': {'color': '#10B981'}, 'decreasing': {'color': '#EF4444'}},
-                number={'suffix': '%', 'font': {'size': 28, 'color': '#F8FAFC', 'family': 'Inter'}},
+                       'increasing': {'color': '#1D9E75'}, 'decreasing': {'color': '#DC2626'}},
+                number={'suffix': '%', 'font': {'size': 28, 'color': '#F8FAFC', 'family': 'DM Sans'}},
                 gauge={
                     'axis': {'range': [-100, 500], 'tickcolor': '#475569',
                              'tickfont': {'color': '#475569', 'size': 9}},
@@ -388,35 +491,24 @@ def render_business_simulator(
                     'bgcolor': 'rgba(13,17,23,0.4)',
                     'bordercolor': 'rgba(139,92,246,0.15)',
                     'steps': [
-                        {'range': [-100, 0], 'color': 'rgba(239,68,68,0.08)'},
-                        {'range': [0, 500], 'color': 'rgba(16,185,129,0.05)'},
+                        {'range': [-100, 0], 'color': 'rgba(220,38,38,0.08)'},
+                        {'range': [0, 500], 'color': 'rgba(29,158,117,0.05)'},
                     ],
-                    'threshold': {'line': {'color': '#8B5CF6', 'width': 2}, 'thickness': 0.75, 'value': 100}
+                    'threshold': {'line': {'color': '#7C3AED', 'width': 2}, 'thickness': 0.75, 'value': 100}
                 },
                 title={'text': f"ROI vs Intervention Cost",
-                       'font': {'size': 12, 'color': '#94A3B8', 'family': 'Inter'}},
+                       'font': {'size': 12, 'color': '#94A3B8', 'family': 'Space Mono'}},
             ))
-            fig_gauge.update_layout(
-                paper_bgcolor='rgba(0,0,0,0)',
-                font=dict(color='#94A3B8', family='Inter'),
-                height=260,
-                margin=dict(l=20, r=20, t=40, b=10),
-            )
+            _apply_custom_theme(fig_gauge, height=260)
             st.plotly_chart(fig_gauge, use_container_width=True)
 
-            st.markdown(f"""
-            <div style='background:linear-gradient(135deg,rgba(13,17,23,0.9),rgba(8,12,24,0.8));
-                        border:1px solid rgba(139,92,246,0.25);border-radius:16px;padding:18px;
-                        backdrop-filter:blur(20px);'>
-                <div style='font-size:9px;color:#8B5CF6;
-                            font-weight:700;text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px;'>
-                    Simulation Insight</div>
-                <div style='color:#CBD5E1;font-size:13px;line-height:1.7;'>
-                    Improving M{ri_month} retention by <b>{ri_improvement:.1f}pp</b>
-                    saves <b>{ri_res["additional_retained"]:,} extra customers</b>,
-                    generating <b>&#8377;{ri_res["ltv_gained"]:,.0f}</b> in annual LTV uplift.
-                    Your benchmark: <b>{ri_res["best_cohort"]}</b> cohort at <b>{ri_res["best_cohort_rate"]}%</b>.
-                    Champion LTV benchmark = &#8377;{ri_res["champion_ltv"]:,.0f}/year.
-                </div>
-            </div>
-            """, unsafe_allow_html=True)
+            st.markdown("<br>", unsafe_allow_html=True)
+
+            ri_rec_text = f"""
+            Improving M{ri_month} retention by <b>{ri_improvement:.1f}pp</b>
+            saves <b>{ri_res["additional_retained"]:,} extra customers</b>,
+            generating <b>₹{ri_res["ltv_gained"]:,.0f}</b> in annual LTV uplift.<br>
+            Your benchmark: <b>{ri_res["best_cohort"]}</b> cohort at <b>{ri_res["best_cohort_rate"]}%</b>.<br>
+            Champion LTV benchmark = ₹{ri_res["champion_ltv"]:,.0f}/year.
+            """
+            st.markdown(_recommendation_card("Simulation Insight", ri_rec_text, border=_BORDER, accent=_PURPLE), unsafe_allow_html=True)

@@ -1,15 +1,98 @@
-"""Overview page — Premium "Dark Intelligence" design."""
+"""Overview page — Recruiter-stopping dashboard design."""
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+import plotly.graph_objects as go
 import logging
 
-from utils.charts import (
-    apply_premium_theme, apply_premium_theme_no_axes,
-    BAR_COLOR, PLATFORM_PIE_COLORS
-)
-
 logger = logging.getLogger(__name__)
+
+
+# ── Design tokens ────────────────────────────────────────────
+_BG       = "#060B14"
+_CARD_BG  = "linear-gradient(135deg, #0F1C2E, #0D1823)"
+_BORDER   = "linear-gradient(90deg, #DC2626, #7C3AED)"
+_RED      = "#DC2626"
+_PURPLE   = "#7C3AED"
+_GREEN    = "#1D9E75"
+_LABEL_C  = "#64748B"
+_VALUE_C  = "#F1F5F9"
+_PLOT_BG  = "#0D1823"
+_HOVER_BG = "#0F1C2E"
+_HOVER_BD = "#1E2D40"
+
+
+def _kpi_card(label: str, value: str, delta: str = "") -> str:
+    """Render a single KPI card as HTML."""
+    delta_html = ""
+    if delta:
+        delta_html = (
+            f"<div style='font-family:\"Space Mono\",monospace;font-size:10px;"
+            f"color:{_LABEL_C};margin-top:6px;'>{delta}</div>"
+        )
+    return f"""
+    <div style="
+        background: {_CARD_BG};
+        border-radius: 14px;
+        padding: 22px 24px;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    ">
+        <div style="
+            position:absolute; top:0; left:0; right:0; height:2px;
+            background: {_BORDER};
+        "></div>
+        <div style="
+            font-family:'Space Mono',monospace;
+            font-size:10px; text-transform:uppercase;
+            color:{_LABEL_C}; letter-spacing:0.12em;
+            margin-bottom:8px;
+        ">{label}</div>
+        <div style="
+            font-family:'DM Sans',sans-serif;
+            font-weight:700; font-size:30px;
+            color:{_VALUE_C}; line-height:1.1;
+        ">{value}</div>
+        {delta_html}
+    </div>
+    """
+
+
+def _insight_card(number: str, label: str, text: str) -> str:
+    """Render a bottom insight card with red bottom border gradient."""
+    return f"""
+    <div style="
+        background: {_CARD_BG};
+        border-radius: 14px;
+        padding: 24px;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+        min-height: 200px;
+    ">
+        <div style="
+            position:absolute; bottom:0; left:0; right:0; height:2px;
+            background: {_BORDER};
+        "></div>
+        <div style="
+            font-family:'DM Sans',sans-serif;
+            font-weight:700; font-size:24px;
+            color:#FFFFFF; margin-bottom:8px;
+        ">{number}</div>
+        <div style="
+            font-family:'Space Mono',monospace;
+            font-size:10px; text-transform:uppercase;
+            color:{_RED}; letter-spacing:0.12em;
+            margin-bottom:10px;
+        ">{label}</div>
+        <div style="
+            font-family:'DM Sans',sans-serif;
+            font-size:13px; color:{_LABEL_C};
+            line-height:1.65;
+        ">{text}</div>
+    </div>
+    """
 
 
 def render_overview(
@@ -23,220 +106,164 @@ def render_overview(
     pm: pd.DataFrame,
     total_prod: int,
 ) -> None:
-    """Renders the Overview page with premium hero header."""
+    """Renders the Overview page with recruiter-stopping design."""
 
-    # ── HERO SECTION ──
-    st.markdown("""
-    <div style="padding: 32px 0 24px; animation: fadeIn 0.8s ease;">
-
-      <div style="display:flex; align-items:center;
-                  gap:12px; margin-bottom:16px;">
-        <div style="
-          width:40px; height:40px;
-          background: linear-gradient(135deg, #8B5CF6, #3B82F6);
-          border-radius:10px;
-          display:flex; align-items:center;
-          justify-content:center;
-          font-size:20px;
-          box-shadow: 0 8px 24px rgba(139,92,246,0.3);
-        ">🛒</div>
-        <div>
-          <div style="
+    # ── BADGE ──
+    st.markdown(f"""
+    <div style="padding:28px 0 6px;">
+        <span style="
+            display:inline-block;
+            font-family:'Space Mono',monospace;
             font-size:11px; font-weight:700;
-            text-transform:uppercase; letter-spacing:0.15em;
-            color:#475569;
-          ">India Quick Commerce Intelligence</div>
-          <div class="live-badge" style="margin-top:4px;">
-            <span class="status-dot status-live"></span>
-            Live Dashboard
-          </div>
-        </div>
-      </div>
-
-      <h1 style="
-        font-size:48px !important;
-        font-weight:900 !important;
-        letter-spacing:-0.04em !important;
-        line-height:1.05 !important;
-        margin:0 0 12px !important;
-        background: linear-gradient(135deg,
-          #F8FAFC 0%, #C4B5FD 40%, #93C5FD 80%) !important;
-        -webkit-background-clip: text !important;
-        -webkit-text-fill-color: transparent !important;
-      ">QC Pulse India</h1>
-
-      <p style="
-        font-size:16px; color:#64748B;
-        font-weight:400; margin:0 0 28px;
-        max-width:600px; line-height:1.6;
-      ">Competitive intelligence across Blinkit, Zepto & BigBasket —
-         RFM segmentation, cohort retention, price intelligence,
-         and business decision simulation.</p>
-
-      <div style="display:flex; gap:8px; flex-wrap:wrap;">
-        <span class="platform-badge badge-blinkit">⚡ Blinkit</span>
-        <span class="platform-badge badge-zepto">🟢 Zepto</span>
-        <span class="platform-badge badge-bigbasket">🛍️ BigBasket</span>
-        <span style="
-          display:inline-flex; align-items:center; gap:6px;
-          padding:4px 12px; border-radius:99px;
-          font-size:12px; font-weight:600;
-          background:rgba(6,182,212,0.1);
-          border:1px solid rgba(6,182,212,0.3);
-          color:#67E8F9;
-        ">📊 3,898 Customers Analysed</span>
-        <span style="
-          display:inline-flex; align-items:center; gap:6px;
-          padding:4px 12px; border-radius:99px;
-          font-size:12px; font-weight:600;
-          background:rgba(16,185,129,0.1);
-          border:1px solid rgba(16,185,129,0.3);
-          color:#6EE7B7;
-        ">🔮 Business Simulator</span>
-      </div>
-
+            text-transform:uppercase; letter-spacing:0.12em;
+            color:{_RED};
+            background:rgba(220,38,38,0.1);
+            border:1px solid rgba(220,38,38,0.3);
+            padding:5px 14px; border-radius:99px;
+        ">● LIVE DASHBOARD</span>
     </div>
     """, unsafe_allow_html=True)
 
-    # ── KPIs ──
+    # ── TITLE + SUBTITLE ──
+    st.markdown(f"""
+    <h1 style="
+        font-family:'DM Sans',sans-serif !important;
+        font-size:28px !important; font-weight:700 !important;
+        color:#F1F5F9 !important;
+        -webkit-text-fill-color:#F1F5F9 !important;
+        background:none !important;
+        margin:10px 0 6px !important;
+        letter-spacing:-0.02em !important;
+    ">Quick Commerce Pulse India</h1>
+    <p style="
+        font-family:'DM Sans',sans-serif;
+        font-size:14px; color:{_LABEL_C};
+        margin:0 0 28px;
+    ">Competitive intelligence across Blinkit · Zepto · BigBasket</p>
+    """, unsafe_allow_html=True)
+
+    # ── KPI ROW ──
+    customers_count = rfm['customer_id'].nunique()
+    transactions = len(gr)
+    champ = rfm_sum[rfm_sum['segment'] == 'Champion'].iloc[0]
+    champ_count = int(champ['customers'])
+
     c1, c2, c3, c4 = st.columns(4)
     with c1:
-        st.metric("Total Products", f"{total_prod:,}", "3 platforms")
+        st.markdown(_kpi_card("TOTAL PRODUCTS", f"{total_prod:,}", "Blinkit + Zepto + BigBasket"), unsafe_allow_html=True)
     with c2:
-        st.metric("Customers Analysed", f"{rfm['customer_id'].nunique():,}", "RFM segmented")
+        st.markdown(_kpi_card("CUSTOMERS ANALYSED", f"{customers_count:,}", "RFM segmented"), unsafe_allow_html=True)
     with c3:
-        st.metric("Transactions", f"{len(gr):,}", "2 years")
+        st.markdown(_kpi_card("TRANSACTIONS", f"{transactions:,}", "Grocery dataset"), unsafe_allow_html=True)
     with c4:
-        champ = rfm_sum[rfm_sum['segment'] == 'Champion'].iloc[0]
-        st.metric("Champion Customers", f"{int(champ['customers']):,}", f"{champ['pct_customers']}% of base")
+        st.markdown(_kpi_card("CHAMPION CUSTOMERS", f"{champ_count:,}", f"{champ['pct_customers']}% of base"), unsafe_allow_html=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
 
-    # ── Charts row ──
-    col_left, col_right = st.columns([1.6, 1])
+    # ── CHARTS ROW ──
+    col_left, col_right = st.columns([1.5, 1])
 
     with col_left:
-        st.markdown("<p class='section-label'>Top Categories — Blinkit Products</p>", unsafe_allow_html=True)
+        st.markdown(f"""
+        <div style="font-family:'Space Mono',monospace;font-size:10px;
+            text-transform:uppercase;color:{_LABEL_C};letter-spacing:0.12em;
+            margin-bottom:12px;">Top 10 Blinkit Categories by Product Count</div>
+        """, unsafe_allow_html=True)
+
         cats = bl['category'].value_counts().head(10).reset_index()
         cats.columns = ['category', 'count']
-        fig = px.bar(
-            cats.sort_values('count'),
-            x='count', y='category', orientation='h',
-            color_discrete_sequence=[BAR_COLOR],
-            text='count',
-            labels={'count': '', 'category': ''}
+        cats = cats.sort_values('count')
+
+        # Custom colorscale: low=#1E2D40, high=#DC2626
+        max_val = cats['count'].max()
+        min_val = cats['count'].min()
+        range_val = max_val - min_val if max_val != min_val else 1
+        bar_colors = []
+        for v in cats['count']:
+            t = (v - min_val) / range_val
+            r = int(30 + t * (220 - 30))
+            g = int(45 + t * (38 - 45))
+            b = int(64 + t * (38 - 64))
+            bar_colors.append(f'rgb({r},{g},{b})')
+
+        fig = go.Figure(go.Bar(
+            x=cats['count'],
+            y=cats['category'],
+            orientation='h',
+            marker_color=bar_colors,
+            text=cats['count'],
+            texttemplate='%{text:,}',
+            textposition='outside',
+            textfont=dict(color='#94A3B8', size=11, family='DM Sans'),
+            marker_line_width=0,
+        ))
+        fig.update_layout(
+            plot_bgcolor=_PLOT_BG,
+            paper_bgcolor=_PLOT_BG,
+            font=dict(family='DM Sans', color='#94A3B8', size=11),
+            margin=dict(l=10, r=60, t=10, b=10),
+            height=360,
+            xaxis=dict(showgrid=False, showticklabels=False, zeroline=False),
+            yaxis=dict(gridcolor='#1E2D40', color='#94A3B8', tickfont=dict(size=11)),
+            hoverlabel=dict(bgcolor=_HOVER_BG, bordercolor=_HOVER_BD, font=dict(color='white', size=12)),
         )
-        fig.update_traces(
-            texttemplate='%{text:,}', textposition='outside',
-            textfont=dict(color='#94A3B8', size=10),
-            marker_line_width=0
-        )
-        apply_premium_theme(fig, height=360)
-        fig.update_xaxes(showgrid=False)
         st.plotly_chart(fig, use_container_width=True)
 
     with col_right:
-        st.markdown("<p class='section-label'>Platform Share</p>", unsafe_allow_html=True)
+        st.markdown(f"""
+        <div style="font-family:'Space Mono',monospace;font-size:10px;
+            text-transform:uppercase;color:{_LABEL_C};letter-spacing:0.12em;
+            margin-bottom:12px;">Platform Share</div>
+        """, unsafe_allow_html=True)
+
         pf = pd.DataFrame({
             'Platform': ['BigBasket', 'Blinkit', 'Zepto'],
             'Products': [len(bb), len(bl), len(ze)]
         })
+        pie_colors = {'BigBasket': '#6C63DB', 'Blinkit': '#DC2626', 'Zepto': '#1D9E75'}
+
         fig2 = px.pie(
             pf, values='Products', names='Platform',
             color='Platform',
-            color_discrete_map=PLATFORM_PIE_COLORS,
+            color_discrete_map=pie_colors,
             hole=0.62
         )
-        apply_premium_theme_no_axes(fig2, height=360)
         fig2.update_layout(
-            legend=dict(bgcolor='rgba(0,0,0,0)', font=dict(color='#94A3B8', size=12)),
+            plot_bgcolor=_PLOT_BG,
+            paper_bgcolor=_PLOT_BG,
+            font=dict(family='DM Sans', color='#94A3B8', size=11),
+            margin=dict(l=10, r=10, t=10, b=10),
+            height=360,
+            legend=dict(bgcolor='rgba(0,0,0,0)', font=dict(color='#94A3B8', size=12, family='DM Sans')),
             annotations=[dict(
                 text=f'<b>{total_prod:,}</b><br><span style="font-size:10px">Products</span>',
-                x=0.5, y=0.5, font_size=14, font_color='#F8FAFC',
+                x=0.5, y=0.5, font_size=16, font_color=_VALUE_C,
+                font_family='DM Sans',
                 showarrow=False
-            )]
+            )],
+            hoverlabel=dict(bgcolor=_HOVER_BG, bordercolor=_HOVER_BD, font=dict(color='white', size=12)),
         )
         fig2.update_traces(
             textfont_color='white', textinfo='percent',
-            marker=dict(line=dict(color='#050810', width=3))
+            marker=dict(line=dict(color=_BG, width=3))
         )
         st.plotly_chart(fig2, use_container_width=True)
 
-    # ── Insights ──
-    st.markdown("---")
-    st.markdown("<p class='section-label'>Key Findings</p>", unsafe_allow_html=True)
-
-    c1, c2, c3 = st.columns(3)
-    with c1:
-        st.markdown("""<div class='insight-card'>
-            <span class='num'>809</span>
-            <h4>Champions</h4>
-            <p>Champions order every 58 days, averaging 6.3 orders per customer. They generate 3.6x higher lifetime value (LTV) than churned customers, representing the core value of the user base.</p>
-        </div>""", unsafe_allow_html=True)
-    with c2:
-        st.markdown("""<div class='insight-card'>
-            <span class='num'>889</span>
-            <h4>Churned</h4>
-            <p>Churned customers have been inactive for over 400 days. Launching immediate win-back marketing campaigns presents a significant opportunity to recover lost subscription and basket revenue.</p>
-        </div>""", unsafe_allow_html=True)
-    with c3:
-        st.markdown("""<div class='insight-card'>
-            <span class='num'>26.3%</span>
-            <h4>Best Cohort</h4>
-            <p>The June 2015 cohort achieved the highest customer retention rate at 26.3%. This is a remarkable 84% above the average customer retention rate, highlighting a highly successful onboarding period.</p>
-        </div>""", unsafe_allow_html=True)
-
-    # ── Auto-Generated Business Intelligence ──
+    # ── INSIGHT CARDS ──
     st.markdown("<br>", unsafe_allow_html=True)
-    st.markdown("---")
-    st.markdown("<p class='section-label'>📰 Auto-Generated Business Intelligence</p>", unsafe_allow_html=True)
-    st.markdown(
-        "<p style='color:#475569;font-size:13px;margin-bottom:20px'>"
-        "5 data-backed insights computed live from your dataset — no manual interpretation needed."
-        "</p>",
-        unsafe_allow_html=True
-    )
-
-    try:
-        from utils.story_generator import generate_cohort_story
-        stories = generate_cohort_story(cohort, rfm, pm)
-    except Exception as _story_err:
-        logger.warning(f"Story generator failed: {_story_err}")
-        stories = {
-            "headline": "Data analysis in progress — run the pipeline to refresh insights.",
-            "price_war": "Platform pricing gaps detected — see Price Intelligence page for details.",
-            "champion_at_risk": "Champion and At-Risk segment analysis ready — see Customer Segments.",
-            "retention_alert": "Retention metrics loaded — see Cohort Retention for the full picture.",
-            "opportunity": "Improvement opportunity identified — use the Business Simulator to model scenarios.",
-        }
-
-    STORY_CONFIG = [
-        ("headline",         "🏆 Cohort Highlight",     "#8B5CF6"),
-        ("price_war",        "⚔️ Price Intelligence",   "#EF4444"),
-        ("champion_at_risk", "💰 Revenue Opportunity",  "#F59E0B"),
-        ("retention_alert",  "⚠️ Retention Alert",      "#EF4444"),
-        ("opportunity",      "📈 Growth Potential",     "#10B981"),
-    ]
-
-    col_a, col_b = st.columns(2)
-    for idx, (key, label, color) in enumerate(STORY_CONFIG):
-        text = stories.get(key, "")
-        container = col_a if idx % 2 == 0 else col_b
-        with container:
-            st.markdown(f"""
-            <div style='background: linear-gradient(135deg,
-                          rgba(13,17,23,0.9) 0%, rgba(8,12,24,0.8) 100%);
-                        border: 1px solid rgba(139,92,246,0.1);
-                        border-left: 3px solid {color};
-                        border-radius: 0 16px 16px 0;
-                        padding: 18px 24px;
-                        margin-bottom: 14px;
-                        transition: all 0.3s ease;
-                        animation: slideUp 0.6s ease forwards;
-                        animation-delay: {idx * 0.1}s;'>
-                <div style='font-size: 10px;
-                            color: {color}; font-weight: 700; text-transform: uppercase;
-                            letter-spacing: .12em; margin-bottom: 8px;'>{label}</div>
-                <div style='color: #CBD5E1; font-size: 13px; line-height: 1.7;'>{text}</div>
-            </div>
-            """, unsafe_allow_html=True)
+    ic1, ic2, ic3 = st.columns(3)
+    with ic1:
+        st.markdown(_insight_card(
+            "809", "CHAMPION CUSTOMERS",
+            "Order every 58 days avg — 6.3 orders, 16.9 items. Highest LTV segment at 20.8% of base."
+        ), unsafe_allow_html=True)
+    with ic2:
+        st.markdown(_insight_card(
+            "889", "CUSTOMERS CHURNED",
+            "22.8% of customers — last order 400+ days ago. Win-back campaigns needed urgently."
+        ), unsafe_allow_html=True)
+    with ic3:
+        st.markdown(_insight_card(
+            "26.3%", "PEAK MONTH-1 RETENTION",
+            "June 2015 cohort — 84% above the 14.3% average. Shows what's possible with right acquisition."
+        ), unsafe_allow_html=True)

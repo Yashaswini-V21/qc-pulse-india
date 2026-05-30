@@ -190,7 +190,7 @@ st.markdown("""
             backdrop-filter: blur(20px);
             flex-wrap: wrap; gap: 12px;'>
     <div style='font-size:11px; color:#475569; font-weight:500;'>
-        © 2026 QC Pulse India · Decision Intelligence Engine
+        © 2026 QC Pulse India · <a href="https://github.com/Yashaswini-V21/qc-pulse-india" target="_blank" style="text-decoration:none; color:#8B5CF6; font-weight:700;">📂 GitHub Codebase</a>
     </div>
     <div style='display:flex; gap:16px; font-size:11px;'>
         <span style='color:#8B5CF6;'>●</span>

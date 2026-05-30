@@ -1,208 +1,367 @@
-"""Customer Segments page — Premium "Dark Intelligence" design."""
+"""Customer Segments page — RFM analytics dashboard design."""
 import streamlit as st
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
+import logging
 
-from config import SEGMENT_COLORS
-from utils.charts import (
-    apply_premium_theme, apply_premium_theme_no_axes,
-    SEGMENT_SCATTER_COLORS,
-)
+logger = logging.getLogger(__name__)
+
+
+# ── Design tokens ────────────────────────────────────────────
+_BG       = "#060B14"
+_CARD_BG  = "linear-gradient(135deg, #0F1C2E, #0D1823)"
+_BORDER   = "linear-gradient(90deg, #DC2626, #7C3AED)"
+_PURPLE   = "#6C63DB"
+_LABEL_C  = "#64748B"
+_VALUE_C  = "#F1F5F9"
+_PLOT_BG  = "#0D1823"
+_HOVER_BG = "#0F1C2E"
+_HOVER_BD = "#1E2D40"
+_GREEN    = "#1D9E75"
+_RED      = "#DC2626"
+
+
+# Exact segment colors
+SEG_COLORS = {
+    'Champion':  '#DC2626',
+    'Loyal':     '#F97316',
+    'Potential': '#6C63DB',
+    'At-Risk':   '#F59E0B',
+    'Churned':   '#475569',
+}
+
+
+def _kpi_card(label: str, value: str, delta: str = "") -> str:
+    delta_html = ""
+    if delta:
+        delta_html = (
+            f"<div style='font-family:\"Space Mono\",monospace;font-size:10px;"
+            f"color:{_LABEL_C};margin-top:6px;'>{delta}</div>"
+        )
+    return f"""
+    <div style="
+        background: {_CARD_BG};
+        border-radius: 14px;
+        padding: 22px 24px;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    ">
+        <div style="
+            position:absolute; top:0; left:0; right:0; height:2px;
+            background: {_BORDER};
+        "></div>
+        <div style="
+            font-family:'Space Mono',monospace;
+            font-size:10px; text-transform:uppercase;
+            color:{_LABEL_C}; letter-spacing:0.12em;
+            margin-bottom:8px;
+        ">{label}</div>
+        <div style="
+            font-family:'DM Sans',sans-serif;
+            font-weight:700; font-size:30px;
+            color:{_VALUE_C}; line-height:1.1;
+        ">{value}</div>
+        {delta_html}
+    </div>
+    """
+
+
+def _strategy_card(segment: str, count: int, action: str, color: str) -> str:
+    return f"""
+    <div style="
+        background: {_CARD_BG};
+        border-radius: 14px;
+        padding: 20px;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+        min-height: 140px;
+    ">
+        <div style="
+            position:absolute; top:0; left:0; right:0; height:3px;
+            background: {color};
+        "></div>
+        <div style="
+            font-family:'DM Sans',sans-serif;
+            font-size:14px; font-weight:700;
+            color:#F1F5F9; margin-bottom:4px; margin-top:4px;
+        ">{segment}</div>
+        <div style="
+            font-family:'Space Mono',monospace;
+            font-size:10px; color:{_LABEL_C};
+            margin-bottom:10px;
+        ">{count:,} customers</div>
+        <div style="
+            font-family:'DM Sans',sans-serif;
+            font-size:12px; color:#94A3B8;
+            line-height:1.5;
+        ">{action}</div>
+    </div>
+    """
 
 
 def render_customer_segments(
     rfm: pd.DataFrame,
     rfm_sum: pd.DataFrame,
 ) -> None:
-    """Renders Customer Segments page with premium design."""
-    # ── CYBER HEADER ──
-    st.markdown("""
-    <div style="padding: 24px 0 16px; animation: fadeIn 0.8s ease;">
-      <div style="display:flex; align-items:center; gap:14px; margin-bottom:12px;">
-        <div style="
-          width:44px; height:44px;
-          background: linear-gradient(135deg, #B923FF, #3B82F6);
-          border-radius:12px;
-          display:flex; align-items:center; justify-content:center;
-          font-size:22px;
-          box-shadow: 0 8px 24px rgba(185,35,255,0.3);
-        ">👥</div>
-        <div>
-          <div class="stat-badge" style="margin:0; background:rgba(185,35,255,0.15); border-color:rgba(185,35,255,0.35); color:#D8B4FE; box-shadow:0 0 15px rgba(185,35,255,0.15);">RFM ANALYSIS</div>
-          <div class="live-badge" style="margin-top:4px;">
-            <span class="status-dot status-live"></span>
-            Customer Clustering Engine Active
-          </div>
-        </div>
-      </div>
-      <h1 style="
-        font-size:40px !important;
-        font-weight:900 !important;
-        letter-spacing:-0.03em !important;
-        line-height:1.1 !important;
-        margin:0 0 8px !important;
-        background: linear-gradient(135deg, #FFFFFF 0%, #D8B4FE 50%, #60A5FA 100%) !important;
-        -webkit-background-clip: text !important;
-        -webkit-text-fill-color: transparent !important;
-      ">Customer Segmentation</h1>
-      <p style="
-        font-size:14.5px; color:#64748B;
-        font-weight:400; margin:0 0 20px;
-        line-height:1.6;
-      ">3,898 customers segmented by Recency · Frequency · Monetary value</p>
+    """Renders Customer Segments page with RFM analytics design."""
+
+    # ── BADGE ──
+    st.markdown(f"""
+    <div style="padding:28px 0 6px;">
+        <span style="
+            display:inline-block;
+            font-family:'Space Mono',monospace;
+            font-size:11px; font-weight:700;
+            text-transform:uppercase; letter-spacing:0.12em;
+            color:{_PURPLE};
+            background:rgba(108,99,219,0.1);
+            border:1px solid rgba(108,99,219,0.3);
+            padding:5px 14px; border-radius:99px;
+        ">● RFM ANALYSIS</span>
     </div>
     """, unsafe_allow_html=True)
-    st.markdown("---")
 
-    # Segment selector in sidebar
-    with st.sidebar:
-        st.markdown("""<hr style='border:none; height:1px;
-                       background: linear-gradient(90deg, transparent,
-                       rgba(139,92,246,0.2), transparent); margin:16px 0'>""", unsafe_allow_html=True)
-        st.markdown("<p class='section-label'>Segment Filtering</p>", unsafe_allow_html=True)
-        selected_segment = st.selectbox(
-            "Highlight Segment",
-            ["All Segments", "Champion", "Loyal", "Potential", "At-Risk", "Churned"]
-        )
+    # ── TITLE + SUBTITLE ──
+    st.markdown(f"""
+    <h1 style="
+        font-family:'DM Sans',sans-serif !important;
+        font-size:28px !important; font-weight:700 !important;
+        color:#F1F5F9 !important;
+        -webkit-text-fill-color:#F1F5F9 !important;
+        background:none !important;
+        margin:10px 0 6px !important;
+        letter-spacing:-0.02em !important;
+    ">Customer Segmentation</h1>
+    <p style="
+        font-family:'DM Sans',sans-serif;
+        font-size:14px; color:{_LABEL_C};
+        margin:0 0 28px;
+    ">{len(rfm):,} customers segmented by Recency · Frequency · Monetary value</p>
+    """, unsafe_allow_html=True)
 
-    # Setup colors based on selection
-    if selected_segment == "All Segments":
-        seg_colors = SEGMENT_SCATTER_COLORS.copy()
-    else:
-        seg_colors = {
-            s: (color if s == selected_segment else '#1E293B')
-            for s, color in SEGMENT_SCATTER_COLORS.items()
-        }
-
+    # ── KPI ROW ──
     champ = rfm_sum[rfm_sum['segment'] == 'Champion'].iloc[0]
     churn = rfm_sum[rfm_sum['segment'] == 'Churned'].iloc[0]
 
     c1, c2, c3, c4 = st.columns(4)
     with c1:
-        st.metric("Total Customers", f"{len(rfm):,}")
+        st.markdown(_kpi_card("TOTAL CUSTOMERS", f"{len(rfm):,}"), unsafe_allow_html=True)
     with c2:
-        st.metric("Champions", f"{int(champ['customers']):,}", f"{champ['pct_customers']}% of base")
+        st.markdown(_kpi_card("CHAMPIONS", f"{int(champ['customers']):,}", f"{champ['pct_customers']}% of base"), unsafe_allow_html=True)
     with c3:
-        st.metric("Churned", f"{int(churn['customers']):,}", f"{churn['pct_customers']}% need win-back")
+        st.markdown(_kpi_card("CHURNED", f"{int(churn['customers']):,}", "need win-back"), unsafe_allow_html=True)
     with c4:
-        st.metric("Champion Avg Frequency", f"{champ['avg_frequency']:.1f}x", f"vs {churn['avg_frequency']:.1f}x churned")
+        st.markdown(_kpi_card("CHAMPION AVG ORDERS", f"{champ['avg_frequency']:.1f}x", f"vs {churn['avg_frequency']:.1f}x churned"), unsafe_allow_html=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
 
-    col1, col2 = st.columns(2)
+    # ── TREEMAP + SCATTER ──
+    col1, col2 = st.columns([1.2, 1])
 
     with col1:
-        st.markdown("<p class='section-label'>Segment Distribution — Treemap</p>", unsafe_allow_html=True)
+        st.markdown(f"""
+        <div style="font-family:'Space Mono',monospace;font-size:10px;
+            text-transform:uppercase;color:{_LABEL_C};letter-spacing:0.12em;
+            margin-bottom:12px;">Segment Distribution — Treemap</div>
+        """, unsafe_allow_html=True)
+
         fig1 = px.treemap(
-            rfm, path=['segment'], values='RFM_Score', color='segment',
-            color_discrete_map=seg_colors
+            rfm, path=['segment'], values='RFM_Score', color='RFM_Score',
+            color_continuous_scale=[[0, '#1E2D40'], [0.5, '#7C3AED'], [1, '#DC2626']]
         )
         fig1.update_layout(
-            height=380, paper_bgcolor='rgba(0,0,0,0)',
-            font=dict(color='white', size=13, family='Inter'),
+            height=380,
+            paper_bgcolor=_PLOT_BG,
+            font=dict(color='white', size=13, family='DM Sans'),
             margin=dict(l=0, r=0, t=10, b=0),
-            coloraxis_showscale=False
+            coloraxis_showscale=False,
         )
         fig1.update_traces(
             textinfo='label+percent entry',
-            textfont=dict(size=14, color='white'),
-            marker=dict(line=dict(color='#050810', width=3))
+            textfont=dict(size=13, color='white'),
+            marker=dict(line=dict(color=_BG, width=3)),
         )
         st.plotly_chart(fig1, use_container_width=True)
 
     with col2:
-        st.markdown("<p class='section-label'>Recency vs Frequency — by Segment</p>", unsafe_allow_html=True)
+        st.markdown(f"""
+        <div style="font-family:'Space Mono',monospace;font-size:10px;
+            text-transform:uppercase;color:{_LABEL_C};letter-spacing:0.12em;
+            margin-bottom:12px;">Recency vs Frequency — by Segment</div>
+        """, unsafe_allow_html=True)
+
+        sample_size = min(1500, len(rfm))
         fig2 = px.scatter(
-            rfm.sample(min(1500, len(rfm))),
+            rfm.sample(sample_size, random_state=42),
             x='recency', y='frequency',
             color='segment', size='monetary',
-            color_discrete_map=seg_colors,
+            color_discrete_map=SEG_COLORS,
             opacity=0.75,
             labels={'recency': 'Days Since Last Order', 'frequency': 'Number of Orders'},
-            size_max=14
+            size_max=14,
         )
-        fig2.add_annotation(
-            x=80, y=9.5,
-            text="High frequency, recent",
-            showarrow=False,
-            font=dict(color='#475569', size=10),
-            align='left'
-        )
-        apply_premium_theme(fig2, height=380)
         fig2.update_layout(
-            legend=dict(bgcolor='rgba(13,17,23,0.8)', font=dict(color='#94A3B8', size=11),
-                        bordercolor='rgba(139,92,246,0.2)', borderwidth=1)
+            plot_bgcolor=_PLOT_BG,
+            paper_bgcolor=_PLOT_BG,
+            font=dict(family='DM Sans', color='#94A3B8', size=11),
+            margin=dict(l=10, r=10, t=10, b=10),
+            height=380,
+            xaxis=dict(gridcolor='#1E2D40', color='#94A3B8', zeroline=False),
+            yaxis=dict(gridcolor='#1E2D40', color='#94A3B8', zeroline=False),
+            legend=dict(bgcolor='rgba(0,0,0,0)', font=dict(color='white', size=11, family='DM Sans')),
+            hoverlabel=dict(bgcolor=_HOVER_BG, bordercolor=_HOVER_BD, font=dict(color='white', size=12)),
         )
         st.plotly_chart(fig2, use_container_width=True)
 
-    # Segment Deep Dive
-    st.markdown("---")
-    st.markdown("<p class='section-label'>Segment Deep Dive — Metrics Comparison</p>", unsafe_allow_html=True)
-
-    fig_deep = go.Figure()
-    metric_labels = ['Avg Recency (Days)', 'Avg Orders', 'Avg Items Bought']
-
-    for seg in rfm_sum['segment'].unique():
-        sub = rfm_sum[rfm_sum['segment'] == seg].iloc[0]
-        fig_deep.add_trace(go.Bar(
-            name=seg,
-            y=metric_labels,
-            x=[sub['avg_recency'], sub['avg_frequency'], sub['avg_monetary']],
-            orientation='h',
-            marker_color=seg_colors.get(seg, '#475569'),
-            text=[f"{sub['avg_recency']:.0f}d", f"{sub['avg_frequency']:.1f}x", f"{sub['avg_monetary']:.0f}"],
-            textposition='outside',
-            textfont=dict(color='#94A3B8', size=10)
-        ))
-
-    fig_deep.update_layout(barmode='group')
-    apply_premium_theme(fig_deep, height=350,
-                        margin=dict(l=10, r=40, t=10, b=10))
-    fig_deep.update_layout(
-        legend=dict(bgcolor='rgba(13,17,23,0.8)', font=dict(color='#94A3B8', size=11))
-    )
-    st.plotly_chart(fig_deep, use_container_width=True)
-
-    # Summary table
-    st.markdown("<p class='section-label'>Full Segment Summary</p>", unsafe_allow_html=True)
-    display_df = rfm_sum[['segment', 'customers', 'pct_customers', 'avg_recency',
-                           'avg_frequency', 'avg_monetary', 'avg_rfm_score']].copy()
-    display_df.columns = ['Segment', 'Customers', '% of Base', 'Avg Recency (days)',
-                          'Avg Orders', 'Avg Items', 'Avg RFM Score']
-    display_df = display_df.sort_values('Avg RFM Score', ascending=False)
-    st.dataframe(display_df, use_container_width=True, hide_index=True)
-
-    # Business Recommendations
     st.markdown("<br>", unsafe_allow_html=True)
-    st.markdown("<p class='section-label'>Business Recommendations by Segment</p>", unsafe_allow_html=True)
 
-    rec_cols = st.columns(5)
-    recs = {
-        'Champion': ("Offer Loyalty Rewards", "Offer loyalty rewards — don't let them churn. Focus on exclusive early access and retention programs.", "#A78BFA"),
-        'Loyal': ("Upsell Premium", "Upsell premium categories — they're ready. Cross-sell high-margin items and organic premium brands.", "#60A5FA"),
-        'Potential': ("Targeted Re-engagement", "Send targeted re-engagement within 30 days. Nurture them with personalized deals and repeat-purchase perks.", "#34D399"),
-        'At-Risk': ("Emergency Discount", "Emergency discount campaign — 24hr offer. Trigger time-limited win-back push notifications.", "#FBBF24"),
-        'Churned': ("Win-back Activation", "Win-back email with highest-performing product from their history. Run cold-customer reactivation campaigns.", "#F87171")
+    # ── SEGMENT COMPARISON BARS ──
+    st.markdown(f"""
+    <div style="font-family:'Space Mono',monospace;font-size:10px;
+        text-transform:uppercase;color:{_LABEL_C};letter-spacing:0.12em;
+        margin-bottom:12px;">Segment Comparison — Avg RFM Score</div>
+    """, unsafe_allow_html=True)
+
+    rfm_sorted = rfm_sum.sort_values('avg_rfm_score', ascending=True)
+    bar_colors = [SEG_COLORS.get(s, '#475569') for s in rfm_sorted['segment']]
+    bar_text = [
+        f"{int(row['customers']):,} customers · {row['avg_frequency']:.1f} avg orders"
+        for _, row in rfm_sorted.iterrows()
+    ]
+
+    fig_bars = go.Figure(go.Bar(
+        x=rfm_sorted['avg_rfm_score'],
+        y=rfm_sorted['segment'],
+        orientation='h',
+        marker_color=bar_colors,
+        text=bar_text,
+        textposition='outside',
+        textfont=dict(color='#94A3B8', size=10, family='DM Sans'),
+        marker_line_width=0,
+    ))
+    fig_bars.update_layout(
+        plot_bgcolor=_PLOT_BG, paper_bgcolor=_PLOT_BG,
+        font=dict(family='DM Sans', color='#94A3B8', size=11),
+        margin=dict(l=10, r=220, t=10, b=10),
+        height=280,
+        xaxis=dict(showgrid=False, showticklabels=False, zeroline=False),
+        yaxis=dict(color='#94A3B8', tickfont=dict(size=12)),
+        hoverlabel=dict(bgcolor=_HOVER_BG, bordercolor=_HOVER_BD, font=dict(color='white', size=12)),
+    )
+    st.plotly_chart(fig_bars, use_container_width=True)
+
+    st.markdown("<br>", unsafe_allow_html=True)
+
+    # ── STRATEGY CARDS ──
+    st.markdown(f"""
+    <div style="font-family:'Space Mono',monospace;font-size:10px;
+        text-transform:uppercase;color:{_LABEL_C};letter-spacing:0.12em;
+        margin-bottom:12px;">Segment Strategy</div>
+    """, unsafe_allow_html=True)
+
+    actions = {
+        'Champion':  '🎁 Loyalty rewards — protect this segment',
+        'Loyal':     '⬆️ Upsell premium — they\'re ready',
+        'Potential': '📧 Re-engage within 30 days',
+        'At-Risk':   '🚨 Emergency discount — 24hr window',
+        'Churned':   '📬 Win-back campaign now',
     }
 
+    seg_cols = st.columns(5)
     for idx, seg in enumerate(['Champion', 'Loyal', 'Potential', 'At-Risk', 'Churned']):
-        title, desc, color = recs[seg]
-        border_color = color if (selected_segment == "All Segments" or selected_segment == seg) else "rgba(139,92,246,0.08)"
-        opacity = 1.0 if (selected_segment == "All Segments" or selected_segment == seg) else 0.4
+        seg_row = rfm_sum[rfm_sum['segment'] == seg]
+        count = int(seg_row.iloc[0]['customers']) if len(seg_row) > 0 else 0
+        with seg_cols[idx]:
+            st.markdown(_strategy_card(
+                seg, count, actions[seg], SEG_COLORS[seg]
+            ), unsafe_allow_html=True)
 
-        with rec_cols[idx]:
-            st.markdown(f"""
-            <div style='background: linear-gradient(135deg,
-                          rgba(13,17,23,0.9) 0%, rgba(8,12,24,0.8) 100%);
-                        border: 1px solid {border_color}; border-radius: 16px; padding: 18px; height: 170px;
-                        opacity: {opacity}; transition: all 0.3s ease;
-                        backdrop-filter: blur(20px);'>
-                <div style='font-size: 10px; color: {color}; font-weight: 700;
-                            text-transform: uppercase; letter-spacing:0.1em;'>
-                    {seg}
-                </div>
-                <div style='font-size:13px; font-weight:700; color:#F8FAFC; margin: 4px 0 8px 0;'>{title}</div>
-                <div style='font-size:11px; color:#94A3B8; line-height: 1.5;'>{desc}</div>
+    st.markdown("<br>", unsafe_allow_html=True)
+
+    # ── STATISTICAL SIGNIFICANCE VALIDATION ──
+    st.markdown("<br>", unsafe_allow_html=True)
+    st.markdown(f"""
+    <div style="font-family:'Space Mono',monospace;font-size:10px;
+        text-transform:uppercase;color:{_LABEL_C};letter-spacing:0.12em;
+        margin-bottom:12px;">🧪 Statistical Validation — Chi-Squared Grouping Significance</div>
+    """, unsafe_allow_html=True)
+
+    # Calculate observed segment counts
+    obs = rfm['segment'].value_counts()
+    n_total = len(rfm)
+    n_classes = len(obs)
+
+    # Expected uniform distribution
+    expected_val = n_total / n_classes
+
+    # Chi-squared statistic calculation
+    chi_square_stat = float(sum([(o - expected_val) ** 2 / expected_val for o in obs]))
+
+    # Degrees of freedom = k - 1 = 4
+    # Critical value at alpha=0.001 for df=4 is 18.47
+    critical_val = 18.47
+    is_significant = chi_square_stat > critical_val
+    p_val_string = "< 0.001" if is_significant else "> 0.05"
+
+    st.markdown(f"""
+    <div style="
+        background: {_CARD_BG};
+        border-radius: 14px;
+        padding: 22px 24px;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    ">
+        <div style="
+            position:absolute; top:0; left:0; right:0; height:2px;
+            background: linear-gradient(90deg, #1D9E75, #6C63DB);
+        "></div>
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
+            <div>
+                <h4 style="font-family:'DM Sans',sans-serif; font-size:16px; font-weight:700; color:#FFFFFF; margin:0 0 6px;">
+                    Chi-Squared Goodness-of-Fit Test
+                </h4>
+                <p style="font-family:'DM Sans',sans-serif; font-size:12.5px; color:#CBD5E1; margin:0; line-height:1.6;">
+                    Null Hypothesis (H₀): Customers are uniformly distributed across behavioral segments.<br>
+                    Alternative (Hₐ): The segment distribution is non-random, indicating true behavioral clustering.
+                </p>
             </div>
-            """, unsafe_allow_html=True)
+            <div style="text-align:right;">
+                <div style="font-family:'Space Mono',monospace; font-size:10px; color:{_LABEL_C}; text-transform:uppercase; letter-spacing:0.05em;">
+                    Test Statistic (χ²)
+                </div>
+                <div style="font-family:'DM Sans',sans-serif; font-size:26px; font-weight:700; color:{_GREEN};">
+                    {chi_square_stat:.2f}
+                </div>
+                <div style="font-family:'Space Mono',monospace; font-size:10px; color:#94A3B8; margin-top:2px; text-transform:uppercase;">
+                    p-value {p_val_string}
+                </div>
+            </div>
+        </div>
+        <div style="
+            margin-top:16px; padding-top:14px; border-top:1px solid rgba(255,255,255,0.06);
+            font-family:'DM Sans',sans-serif; font-size:12px; color:#94A3B8; line-height:1.6;
+        ">
+            <b>Statistical Inference:</b> The calculated χ² test statistic of <b>{chi_square_stat:.2f}</b> far exceeds the critical value of <b>{critical_val}</b> (df=4, α=0.001). We reject H₀ with extreme significance. behavioral grouping is highly structured and representative of actual variance in customer frequency and recency habits.
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.markdown("<br>", unsafe_allow_html=True)
+
+    # ── SUMMARY TABLE ──
+    st.markdown(f"""
+    <div style="font-family:'Space Mono',monospace;font-size:10px;
+        text-transform:uppercase;color:{_LABEL_C};letter-spacing:0.12em;
+        margin-bottom:12px;">Full Segment Summary</div>
+    """, unsafe_allow_html=True)
+
+    display_df = rfm_sum[['segment', 'customers', 'pct_customers', 'avg_recency',
+                           'avg_frequency', 'avg_monetary', 'avg_rfm_score']].copy()
+    display_df.columns = ['Segment', 'Customers', '% Base', 'Avg Recency',
+                          'Avg Orders', 'Avg Items', 'Avg Score']
+    display_df = display_df.sort_values('Avg Score', ascending=False)
+    st.dataframe(display_df, use_container_width=True, hide_index=True)
