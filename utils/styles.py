@@ -14,6 +14,7 @@ def load_custom_css() -> str:
 
 /* Import premium fonts */
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap');
 
 * { font-family: 'Outfit', sans-serif !important; }
 

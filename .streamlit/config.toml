@@ -3,8 +3,8 @@ showErrorDetails = true
 showDeprecationWarnings = false
 
 [theme]
-primaryColor = "#8B5CF6"
-backgroundColor = "#050810"
-secondaryBackgroundColor = "#0D1117"
+primaryColor = "#DC2626"
+backgroundColor = "#060B14"
+secondaryBackgroundColor = "#0D1823"
 textColor = "#F8FAFC"
 font = "sans serif"
