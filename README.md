@@ -11,9 +11,9 @@
 <p align="center">
   <b>Quick Commerce Decision Intelligence Platform</b>
   <br>
-  <sub>Premium analytics dashboard for India's 10-minute delivery ecosystem</sub>
+  <sub>Analytical benchmarking framework for modern multi-platform delivery ecosystems</sub>
   <br>
-  <code>Blinkit</code> · <code>Zepto</code> · <code>BigBasket</code> — pricing, retention, segmentation & simulation
+  <code>Blinkit</code> · <code>Zepto</code> · <code>BigBasket</code> — pricing indices, cohort retention, and market basket affinities
 </p>
 
 ---
@@ -21,30 +21,33 @@
 <div align="center">
   <table>
     <tr>
-      <td align="center"><b>🛒 39,357</b><br><sub>Products</sub></td>
-      <td align="center"><b>👥 3,898</b><br><sub>Customers</sub></td>
-      <td align="center"><b>📦 38,765</b><br><sub>Transactions</sub></td>
-      <td align="center"><b>📈 24</b><br><sub>Cohorts</sub></td>
-      <td align="center"><b>⚙️ 8</b><br><sub>Modules</sub></td>
-      <td align="center"><b>🔮 3</b><br><sub>Simulators</sub></td>
+      <td align="center"><b>🛒 39,357</b><br><sub>Catalog Products</sub></td>
+      <td align="center"><b>👥 3,898</b><br><sub>Segmented Customers</sub></td>
+      <td align="center"><b>📦 38,765</b><br><sub>Unified Transactions</sub></td>
+      <td align="center"><b>📈 24</b><br><sub>Monthly Cohorts</sub></td>
+      <td align="center"><b>⚙️ 8</b><br><sub>Functional Modules</sub></td>
+      <td align="center"><b>🔮 3</b><br><sub>Scenario Simulators</sub></td>
     </tr>
   </table>
 </div>
 
 ---
 
-## 🎯 Platform Differentiators (Built for 15+ LPA Analytics Roles)
+## 🎯 Platform Objectives & Key Features
 
-Most portfolios show static charts. **QC Pulse India** is a decision-intelligence engine designed for high-growth tech firms:
+**QC Pulse India** is an advanced decision-intelligence framework that processes transactional datasets to model competitive pricing strategies, customer retention dynamics, and purchase behaviors.
 
-* **🎯 Interactive Business Simulator**: Model scenarios using real data: Win-Back Campaign ROI, Price Elasticity Impact (elasticity coefficient of $-2.0$), and Cohort Retention LTV Uplift.
-* **🧪 Mathematical Grouping Validation**: An inline **Chi-Squared ($\chi^2$) Goodness-of-Fit test** to statistically prove behavioral clustering significance ($p < 0.001$), coded from scratch in pure Python/Numpy.
-* **🌊 Multi-Stage Customer Journey Sankey**: A self-contained flow mapping customer acquisition categories to final RFM segments and outcomes.
-* **🎨 Vibrant Dark Space UI**: A terminal design using deep navy backgrounds (`#060B14`), 2px top gradient borders, custom interactive Plotly configurations, and Google Fonts (**DM Sans** + **Space Mono**).
+* **🎯 Scenario Sandbox Simulators**: An interactive simulation engine enabling multi-variable modeling:
+  * **Win-Back Campaign ROI**: Projects re-engagement returns based on segment volume, campaign budgets, and discount incentives.
+  * **Price Elasticity Modeling**: Simulates demand, volume, and top-line shifts across a continuous range of price variations using a retail elasticity coefficient of $-2.0$.
+  * **Retention LTV Uplift**: Estimates lifetime value gains from targeting specific monthly cohort retention curve shifts.
+* **🧪 Statistical Significance Validation**: Coded in pure Python and NumPy, the platform integrates an inline **Chi-Squared ($\chi^2$) Goodness-of-Fit test** to mathematically validate behavioral segmentation clustering patterns against a uniform distribution ($p < 0.001$).
+* **🌊 Customer Journey Flow**: An interactive, multi-node Sankey flow tracking cohort transitions from the initial purchase category through active RFM segments to ultimate customer outcomes.
+* **🎨 High-Contrast Dashboard Design**: Optimized visual structure leveraging deep slate backgrounds (`#060B14`), 2px linear top borders, and responsive grid layouts driven by standard Google Fonts (**DM Sans** and **Space Mono**).
 
 ---
 
-## 🔍 Key Strategic Insights
+## 🔍 Analytical Methodology & Insights
 
 ```
 809 Champions (20.8%)    → order every 58 days, 6.3 avg orders, 3.6× higher LTV
@@ -56,7 +59,7 @@ Zepto                    → leads discounting; BigBasket premium in 4/6 categor
 
 ---
 
-## 📈 Platform Architecture
+## 📈 System Architecture
 
 ```mermaid
 graph TD
@@ -76,109 +79,109 @@ graph TD
 ```
 
 ### 1. Grocery-Adapted RFM Segmentation
-- **Methodology**: 7-day recency threshold for daily/weekly grocery cycles (vs. standard 30-day).
-- **Business Metric**: Champions buy every 58 days, avg 6.3 orders $\rightarrow$ **3.6× higher LTV** than churned.
-- **Actionable ROI**: Models exact cost-per-recovery for re-engaging **889 Churned** and **761 At-Risk** customers.
+- **Model**: Adjusted 7-day recency intervals specifically calibrated for high-frequency quick-commerce purchasing cycles.
+- **Metric**: Champions register an average frequency of 6.3 transactions, driving **3.6× higher LTV** than the churned base.
+- **Action**: Provides direct volume parameters to quantify costs and yields for targeting **889 Churned** and **761 At-Risk** consumers.
 
-### 2. Cohort Retention & LTV Velocity
-- **Methodology**: **24 monthly acquisition cohorts** tracked across 2 full years (24×24 matrix).
-- **Finding**: June 2015 cohort = **26.3% Month-1 retention** (84% above average).
-- **Leverage**: Improving Month-1 by 5pp saves **195 customers** $\rightarrow$ **₹4.15M annual LTV uplift**.
+### 2. Cohort Retention & Lifetime Value Velocity
+- **Model**: **24 monthly acquisition cohorts** monitored over a 24-month horizon (24×24 matrix).
+- **Metric**: Identifies top performance in the June 2015 cohort (**26.3% Month-1 retention**), establishing an operational benchmark.
+- **Action**: Simulates cohort shifts—improving Month-1 by 5pp retains **195 customers**, generating a projected **₹4.15M LTV uplift**.
 
-### 3. Apriori Basket Cross-Selling Intelligence
-- **Methodology**: Market-basket analysis on **14,963 unique trips** at `min_support=0.15%`, `min_confidence=15%` $\rightarrow$ **30 association rules**.
-- **Finding**: Specialty chocolate triggers **1.65× lift** in citrus fruit purchases (62.5% confidence).
-- **Action**: Powers recommendation engines, bundle packages, and shelf placements to grow AOV.
+### 3. Association Rules & Affinity Cross-Selling
+- **Model**: Apriori transaction mining conducted on **14,963 unique orders** (`min_support=0.15%`, `min_confidence=15%`).
+- **Metric**: Identifies key transaction affinities (e.g., specialty chocolate purchases drive a **1.65× lift** in citrus fruit baskets).
+- **Action**: Generates actionable item bundles and localized category placement configurations.
 
 ---
 
-## 🖥️ Dashboard Page Modules
+## 🖥️ Dashboard Page Structure
 
-| # | Page Module | Focus Area | Technical Visualizations |
+| # | Dashboard Module | Analytical Objective | Applied Chart Formats |
 |---|---|---|---|
-| 1 | **📊 Overview** | Health Indicators | Blinkit top 10 categories bar chart, platform share donut chart. |
-| 2 | **⚔️ Price Intelligence** | Competitor Benchmarking | Price gap heat-grid, category-level price indexes. |
-| 3 | **⭐ Review & Rating** | Customer Satisfaction | Ratings frequency distribution, discount vs rating scatter plot. |
-| 4 | **🛒 Market Basket** | Cross-Sell Analysis | Apriori rules bubble chart, interactive bundle recommender. |
-| 5 | **👥 Customer Segments** | Behavioral Clustering | RFM treemap, Recency vs Frequency scatter, **Chi-Squared statistical test**. |
-| 6 | **📈 Cohort Retention** | Long-Term Engagement | 24-cohort heatmap matrix, cohort-level retention trend diagnostics. |
-| 7 | **🌊 Customer Journey** | Retention Flows | Multi-node Sankey flow tracking category acquisition to outcomes. |
-| 8 | **🎯 Business Simulator** | What-If Decision Engine | Win-Back ROI, Price Change Elasticity, Retention LTV indicators. |
+| 1 | **📊 Overview** | High-level operations overview | Categorical inventory spreads, platform share donut charts. |
+| 2 | **⚔️ Price Intelligence** | Competitor pricing gap indices | Multi-platform price heatmaps, discount distribution densities. |
+| 3 | **⭐ Review & Rating** | Customer satisfaction metrics | Sentiment histograms, rating vs discount scatter correlations. |
+| 4 | **🛒 Market Basket** | Affinity bundle optimization | Support vs Confidence bubble charts, rule association matrices. |
+| 5 | **👥 Customer Segments** | Cluster behavioral classification | Segment treemaps, Recency-Frequency distribution scatter plots, **Chi-Squared validations**. |
+| 6 | **📈 Cohort Retention** | Multi-cohort decay patterns | 24-cohort matrix heatmaps, Month-1 average retention trends. |
+| 7 | **🌊 Customer Journey** | Transactional pathway tracking | Multi-node Sankey flow tracking category acquisition to outcomes. |
+| 8 | **🎯 Business Simulator** | Scenario planning engine | campaign ROI charts, dynamic price optimization curves, gauge indicators. |
 
 ---
 
-## 🎨 Visual Design Tokens — "Vibrant Dark Space"
+## 🎨 Visual Styling Parameters — "Vibrant Dark Space"
 
-| Token | CSS Target / Style Rule | Accent Hex Color |
+| Component / Utility | Style Definition | Color Configuration |
 |---|---|---|
-| **Background Color** | `#060B14` (Deep space navy) | - |
-| **Card Styling** | `linear-gradient(135deg, #0F1C2E, #0D1823)` | - |
-| **Top Border Gradient** | 2px top accent line on metric cards | `linear-gradient(90deg, #DC2626, #7C3AED)` |
-| **Monospace Typography** | Space Mono (uppercase, 10px, color `#64748B`, letter-spacing 0.12em) | - |
-| **Value Typography** | DM Sans (700 weight, 30px, color `#F1F5F9`) | - |
-| **Accent Colors** | Active page badges and indicators | Red (`#DC2626`) · Purple (`#7C3AED`) · Green (`#1D9E75`) |
-| **Plotly Theming** | Paper/Plot BG: `#0D1823`, Hover label: `#0F1C2E`, Hover border: `#1E2D40` | - |
+| **Base Theme Background** | Deep space slate | `#060B14` |
+| **Metric Card Panels** | Linear glassmorphism gradient | `linear-gradient(135deg, #0F1C2E, #0D1823)` |
+| **Card Top Accent Border** | 2px linear gradient line | `linear-gradient(90deg, #DC2626, #7C3AED)` |
+| **Typography (Data labels)** | Space Mono (uppercase, 10px, letter-spacing 0.12em) | `#64748B` |
+| **Typography (Metrics)** | DM Sans (700 weight, 30px) | `#F1F5F9` |
+| **Functional Accent Colors** | Page status badges and highlights | Red (`#DC2626`) · Purple (`#7C3AED`) · Green (`#1D9E75`) |
+| **Plotly Theme Integration** | Dark-themed coordinates | Plot BG: `#0D1823`, Hover label: `#0F1C2E`, Border: `#1E2D40` |
 
 ---
 
-## 🚀 Quick Start Guide
+## 🚀 Execution & Setup
 
 ```bash
 # 1. Clone the repository
 git clone https://github.com/Yashaswini-V21/qc-pulse-india.git
 cd QC_Pulse_India
 
-# 2. Setup your virtual environment
+# 2. Initialize virtual environment
 python -m venv .venv
 .venv\Scripts\activate        # Windows
 # source .venv/bin/activate   # macOS/Linux
 
-# 3. Upgrade pip and install dependencies
+# 3. Upgrade package installer and install dependencies
 python -m pip install --upgrade pip
 pip install -r requirements.txt
 
-# 4. Launch the application
+# 4. Launch the Streamlit server
 streamlit run app.py
 ```
 
 ---
 
-## 📁 Directory Architecture
+## 📁 Repository Structure
 
 ```
 QC_Pulse_India/
-├── app.py                    # Entry point — routing + premium CSS injection
-├── config.py                 # Centralized colors, fonts, simulation constants, paths
-├── run_pipeline.py           # Reproducible notebooks execution pipeline
+├── app.py                    # Routing hub and design system injection
+├── config.py                 # Centralized metrics, color indices, and simulation parameters
+├── run_pipeline.py           # Reproducible data cleaning pipeline execution script
 ├── requirements.txt          # Production package requirements
 ├── LICENSE                   # MIT License
 │
-├── views/                    # ★ Single-Responsibility Page View Modules
+├── views/                    # ★ Single-Responsibility Dashboard View Renderers
 │   ├── overview.py           # Dashboard overview metrics & platforms
-│   ├── price_intelligence.py # heatmap pricing indexes and margins
-│   ├── review_rating.py      # Rating distribution & brand audits
-│   ├── market_basket.py      # Apriori associations & bundles
+│   ├── price_intelligence.py # Category price metrics and platform gap indices
+│   ├── review_rating.py      # Rating distribution & brand sentiment audits
+│   ├── market_basket.py      # Apriori transaction associations & cross-sell
 │   ├── customer_segments.py  # RFM segmentations, chi-squared tests
-│   ├── cohort_retention.py   # Heatmap retention tables and curves
+│   ├── cohort_retention.py   # Heatmap retention matrices and curves
 │   ├── customer_journey.py   # Flow metrics and Sankey charts
-│   └── business_simulator.py # ROI Win-Back, price elasticity models
+│   └── business_simulator.py # campaign ROI, price elasticity, retention projection
 │
-├── utils/                    # Data parsing, UI styling & simulators
+├── utils/                    # Data loaders, layout configurations & simulators
 │   ├── data_loader.py        # Cached CSV loading, cleaning & validation
-│   ├── styles.py             # Vibrant Dark Space CSS injection
-│   ├── charts.py             # Plotly custom layout theming
+│   ├── styles.py             # Vibrant Dark Space CSS stylesheet definition
+│   ├── charts.py             # Custom Plotly chart theme parameters
 │   ├── simulator.py          # Win-Back, Price, and Retention simulators
-│   └── story_generator.py    # Automated insights narratives
+│   └── story_generator.py    # Dynamic narrative analytics text generator
 │
 ├── data/
-│   ├── raw/                  # Platform unprocessed snaps (Blinkit, Zepto, BB)
+│   ├── raw/                  # Original platform CSV data slices
 │   └── clean/                # Clean unified analytical CSV targets
 │
-├── notebooks/                # Sequential pipeline development (01→07)
+├── notebooks/                # Development pipeline Jupyter notebooks (01→07)
 │   ├── 01_data_load.ipynb
 │   └── ...
 │
-├── tests/                    # Schema validations (pytest suite)
+├── tests/                    # Testing framework (pytest validation tests)
 │   └── test_data_loader.py
 │
 └── docs/
@@ -189,13 +192,13 @@ QC_Pulse_India/
 
 ---
 
-## 🌐 Production Cloud Hosting Guide
+## 🌐 Production Cloud Hosting
 
-### Streamlit Community Cloud (1-Click Deployment)
-1. Push this codebase to a public GitHub repository.
+### Streamlit Community Cloud (Staging Setup)
+1. Commit and push the codebase to a public GitHub repository branch.
 2. Log into [share.streamlit.io](https://share.streamlit.io/) via GitHub.
-3. Select **New app**, choose this repository, and set the main file path to `app.py`.
-4. Click **Deploy**. Streamlit automatically installs requirements from `requirements.txt`.
+3. Select **New app**, select this repository branch, and set the entry file to `app.py`.
+4. Click **Deploy**. Packages listed in `requirements.txt` will install automatically.
 
 ### Containerized Deployment (Docker)
 Create a standard `Dockerfile` in the root:
@@ -209,7 +212,7 @@ COPY . .
 EXPOSE 8501
 ENTRYPOINT ["streamlit", "run", "app.py"]
 ```
-Build and run locally:
+Build and execute:
 ```bash
 docker build -t qc-pulse-india:latest .
 docker run -d -p 8501:8501 qc-pulse-india:latest
@@ -218,7 +221,7 @@ docker run -d -p 8501:8501 qc-pulse-india:latest
 ---
 
 <p align="center">
-  <b>Built by Yashaswini V</b> · May 2026 · <code>Production Ready</code>
+  <b>Built by Yashaswini V</b> · May 2026
   <br>
-  <sub>Designed with the "Vibrant Dark Space" aesthetic — because your data deserves to look as good as it performs.</sub>
+  <sub>Unified Decision Intelligence Framework for Quick Commerce Analytics</sub>
 </p>
