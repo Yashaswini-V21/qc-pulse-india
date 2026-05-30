@@ -460,7 +460,7 @@ data/clean/
 
 - [README.md](../README.md) — Project overview
 - [docs/data_schema.md](../docs/data_schema.md) — Column definitions
-- [config.py](../config.py) — Dashboard configuration
+- [config.py](../utils/config.py) — Dashboard configuration
 - [app.py](../app.py) — Main Streamlit application
 
 ---

@@ -10,7 +10,7 @@ All monetary projections use avg_order_value = ₹350 (standard Indian QC basket
 
 import pandas as pd
 import numpy as np
-from config import (
+from utils.config import (
     AVG_ORDER_VALUE,
     ORDERS_PER_MONTH_WINBACK as ORDERS_PER_MONTH,
     CHAMPION_LTV_ITEMS,

@@ -3,7 +3,7 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
-from config import BLINKIT_REVIEW_CAT_MAP, BIGBASKET_REVIEW_CAT_MAP
+from utils.config import BLINKIT_REVIEW_CAT_MAP, BIGBASKET_REVIEW_CAT_MAP
 
 # ── Design tokens ────────────────────────────────────────────
 _BG       = "#060B14"

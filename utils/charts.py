@@ -3,7 +3,7 @@ Premium Plotly Chart Theme — "Vibrant Dark Intelligence" Design System
 Applies consistent cyber-neon styling to all Plotly figures across the dashboard.
 """
 import plotly.graph_objects as go
-from config import PLATFORM_COLORS, SEGMENT_COLORS
+from utils.config import PLATFORM_COLORS, SEGMENT_COLORS
 
 
 # ─── BASE LAYOUT ─────────────────────────────────────────────

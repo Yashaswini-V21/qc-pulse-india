@@ -151,7 +151,6 @@ streamlit run app.py
 ```
 QC_Pulse_India/
 ├── app.py                    # Routing hub and design system injection
-├── config.py                 # Centralized metrics, color indices, and simulation parameters
 ├── run_pipeline.py           # Reproducible data cleaning pipeline execution script
 ├── requirements.txt          # Production package requirements
 ├── LICENSE                   # MIT License
@@ -167,6 +166,7 @@ QC_Pulse_India/
 │   └── business_simulator.py # campaign ROI, price elasticity, retention projection
 │
 ├── utils/                    # Data loaders, layout configurations & simulators
+│   ├── config.py             # Centralized metrics, color indices, and simulation parameters
 │   ├── data_loader.py        # Cached CSV loading, cleaning & validation
 │   ├── styles.py             # Vibrant Dark Space CSS stylesheet definition
 │   ├── charts.py             # Custom Plotly chart theme parameters
