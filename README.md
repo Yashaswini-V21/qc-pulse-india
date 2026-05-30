@@ -186,8 +186,7 @@ QC_Pulse_India/
 │
 └── docs/
     ├── DEVELOPER_GUIDE.md    # Staging & container deployment guidelines
-    ├── data_schema.md        # Column definitions and schemas
-    └── PROJECT_REVIEW_RATING.md # Hiring manager audit guide
+    └── data_schema.md        # Column definitions and schemas
 ```
 
 ---
