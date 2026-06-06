@@ -12,9 +12,11 @@ def load_custom_css() -> str:
    SECTION 1 — GLOBAL FOUNDATION
    ═══════════════════════════════════════════════════════════ */
 
-/* Import premium fonts */
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap');
+/* Import premium fonts (via cdnfonts — CSP-safe for Streamlit Cloud) */
+@import url('https://fonts.cdnfonts.com/css/outfit');
+@import url('https://fonts.cdnfonts.com/css/jetbrains-mono-2');
+@import url('https://fonts.cdnfonts.com/css/dm-sans');
+@import url('https://fonts.cdnfonts.com/css/space-mono');
 
 * { font-family: 'Outfit', sans-serif !important; }
 

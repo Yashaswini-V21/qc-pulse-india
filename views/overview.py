@@ -4,6 +4,7 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 import logging
+from utils.story_generator import generate_cohort_story
 
 logger = logging.getLogger(__name__)
 
@@ -249,21 +250,106 @@ def render_overview(
         )
         st.plotly_chart(fig2, use_container_width=True)
 
-    # ── INSIGHT CARDS ──
+    # ── AUTO-INTELLIGENCE — live story generation ──
+    try:
+        stories = generate_cohort_story(cohort_df=cohort, rfm_df=rfm, price_mat_df=pm)
+    except Exception as e:
+        logger.warning(f"Story generation failed: {e}")
+        stories = {}
+
+    # ── INSIGHT CARDS (live data) ──
     st.markdown("<br>", unsafe_allow_html=True)
+
+    # Compute live values for cards
+    champ_row = rfm_sum[rfm_sum['segment'] == 'Champion']
+    churn_row = rfm_sum[rfm_sum['segment'] == 'Churned']
+    champ_count_live = int(champ_row.iloc[0]['customers']) if len(champ_row) > 0 else 0
+    champ_pct_live   = champ_row.iloc[0]['pct_customers'] if len(champ_row) > 0 else "?"
+    champ_freq_live  = champ_row.iloc[0]['avg_frequency'] if len(champ_row) > 0 else "?"
+    champ_mon_live   = champ_row.iloc[0]['avg_monetary'] if len(champ_row) > 0 else "?"
+    churn_count_live = int(churn_row.iloc[0]['customers']) if len(churn_row) > 0 else 0
+    churn_pct_live   = churn_row.iloc[0]['pct_customers'] if len(churn_row) > 0 else "?"
+
+    try:
+        cohort_num = cohort.copy()
+        cohort_num.columns = cohort_num.columns.astype(int)
+        best_cohort_label = str(cohort_num[1].idxmax())
+        best_cohort_pct   = round(float(cohort_num[1].max()), 1)
+        avg_m1_pct        = round(float(cohort_num[1].mean()), 1)
+        pct_above          = round((best_cohort_pct - avg_m1_pct) / avg_m1_pct * 100)
+    except Exception:
+        best_cohort_label = "June 2015"
+        best_cohort_pct   = 26.3
+        avg_m1_pct        = 14.3
+        pct_above          = 84
+
     ic1, ic2, ic3 = st.columns(3)
     with ic1:
         st.markdown(_insight_card(
-            "809", "CHAMPION CUSTOMERS",
-            "Order every 58 days avg — 6.3 orders, 16.9 items. Highest LTV segment at 20.8% of base."
+            f"{champ_count_live:,}", "CHAMPION CUSTOMERS",
+            f"Order every ~58 days avg — {champ_freq_live:.1f} orders, {champ_mon_live:.1f} items. "
+            f"Highest LTV segment at {champ_pct_live}% of base."
         ), unsafe_allow_html=True)
     with ic2:
         st.markdown(_insight_card(
-            "889", "CUSTOMERS CHURNED",
-            "22.8% of customers — last order 400+ days ago. Win-back campaigns needed urgently."
+            f"{churn_count_live:,}", "CUSTOMERS CHURNED",
+            f"{churn_pct_live}% of customers — last order 400+ days ago. "
+            "Win-back campaigns needed urgently."
         ), unsafe_allow_html=True)
     with ic3:
         st.markdown(_insight_card(
-            "26.3%", "PEAK MONTH-1 RETENTION",
-            "June 2015 cohort — 84% above the 14.3% average. Shows what's possible with right acquisition."
+            f"{best_cohort_pct}%", "PEAK MONTH-1 RETENTION",
+            f"{best_cohort_label} cohort — {pct_above}% above the {avg_m1_pct}% average. "
+            "Shows what's possible with the right acquisition strategy."
         ), unsafe_allow_html=True)
+
+    # ── AUTO-INTELLIGENCE PANEL ──
+    if stories:
+        st.markdown("<br>", unsafe_allow_html=True)
+        st.markdown(f"""
+        <div style="font-family:'Space Mono',monospace;font-size:10px;
+            text-transform:uppercase;color:{_LABEL_C};letter-spacing:0.12em;
+            margin-bottom:16px;">
+            🤖 Auto-Intelligence — Data-Driven Business Stories
+        </div>
+        """, unsafe_allow_html=True)
+
+        story_cfg = [
+            ("headline",        "📊", "Retention Intelligence",         _PURPLE),
+            ("price_war",       "⚔️", "Price War Insight",               _RED),
+            ("champion_at_risk","👥", "LTV & Revenue at Risk",           _GREEN),
+            ("retention_alert", "⚠️", "Retention Revenue Leak",          "#F59E0B"),
+            ("opportunity",     "🚀", "Growth Opportunity",              "#06B6D4"),
+        ]
+
+        for key, icon, title, accent in story_cfg:
+            text = stories.get(key, "")
+            if not text:
+                continue
+            st.markdown(f"""
+            <div style="
+                background: {_CARD_BG};
+                border-radius: 14px;
+                padding: 20px 24px;
+                margin-bottom: 10px;
+                position: relative;
+                overflow: hidden;
+                box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+            ">
+                <div style="
+                    position:absolute; top:0; left:0; right:0; height:2px;
+                    background: linear-gradient(90deg, {accent}, transparent);
+                "></div>
+                <div style="
+                    font-family:'Space Mono',monospace;
+                    font-size:10px; text-transform:uppercase;
+                    color:{accent}; letter-spacing:0.12em;
+                    margin-bottom:8px; font-weight:700;
+                ">{icon} {title}</div>
+                <div style="
+                    font-family:'DM Sans',sans-serif;
+                    font-size:13px; color:#CBD5E1;
+                    line-height:1.7;
+                ">{text}</div>
+            </div>
+            """, unsafe_allow_html=True)

@@ -1,18 +1,9 @@
-"""
-QC Pulse India — Quick Commerce Analytics Platform
-"Dark Intelligence" Premium Dashboard
-Run: streamlit run app.py
-"""
 import streamlit as st
 import pandas as pd
 import numpy as np
 import warnings
-import os
-import logging
 
 warnings.filterwarnings('ignore')
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
 
 # ─── PAGE CONFIG ────────────────────────────────────────────
 st.set_page_config(
@@ -61,7 +52,7 @@ with st.sidebar:
     """, unsafe_allow_html=True)
 
     page = st.radio(
-        "nav",
+        "",
         ["📊  Overview",
          "⚔️  Price Intelligence",
          "⭐  Review & Rating",
@@ -177,7 +168,7 @@ elif "Simulator" in page:
     render_business_simulator(rfm, cohort, pm)
 
 
-# ─── PREMIUM FOOTER ───────────────────────────────────────────
+# ─── FOOTER ───────────────────────────────────────────────────
 st.markdown("<br><br>", unsafe_allow_html=True)
 st.markdown("---")
 st.markdown("""
@@ -190,19 +181,16 @@ st.markdown("""
             backdrop-filter: blur(20px);
             flex-wrap: wrap; gap: 12px;'>
     <div style='font-size:11px; color:#475569; font-weight:500;'>
-        © 2026 QC Pulse India · <a href="https://github.com/Yashaswini-V21/qc-pulse-india" target="_blank" style="text-decoration:none; color:#8B5CF6; font-weight:700;">📂 GitHub Codebase</a>
+        © 2026 QC Pulse India &nbsp;·&nbsp;
+        <a href="https://github.com/Yashaswini-V21/qc-pulse-india"
+           target="_blank"
+           style="text-decoration:none; color:#8B5CF6; font-weight:700;">
+           📂 GitHub
+        </a>
     </div>
-    <div style='display:flex; gap:16px; font-size:11px;'>
-        <span style='color:#8B5CF6;'>●</span>
-        <span style='color:#94A3B8;'>Enterprise Grade</span>
-        <span style='color:#10B981;'>●</span>
-        <span style='color:#94A3B8;'>Auto-Intelligence Active</span>
-        <span style='color:#3B82F6;'>●</span>
-        <span style='color:#94A3B8;'>Secure Sandbox</span>
+    <div style='font-size:10px; color:#475569;'>
+        Made by <span style='color:#A78BFA; font-weight:600;'>Yashaswini V</span>
+        &nbsp;·&nbsp; May 2026
     </div>
-</div>
-<div style='font-size:10px; color:#334155;
-            text-align:center; padding:15px 0 5px 0;'>
-    Quick Commerce Decision Intelligence Platform · Yashaswini V
 </div>
 """, unsafe_allow_html=True)
