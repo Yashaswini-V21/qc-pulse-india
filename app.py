@@ -60,7 +60,8 @@ with st.sidebar:
          "👥  Customer Segments",
          "📈  Cohort Retention",
          "🌊  Customer Journey",
-         "🎯  Business Simulator"],
+         "🎯  Business Simulator",
+         "🔬  Data Quality"],
         label_visibility="collapsed"
     )
 
@@ -120,15 +121,15 @@ st.markdown("""
             flex-wrap: wrap; gap: 8px;'>
     <div style='display: flex; align-items: center; gap: 8px; font-size: 11.5px; font-weight: 600; color: #94A3B8;'>
         <span class="status-dot status-live" style="margin: 0; width: 8px; height: 8px;"></span>
-        <span style="color: #22D3EE; text-transform: uppercase; letter-spacing: 0.05em;">AI Coordinated:</span>
-        <span>38,765 transactions analyzed live</span>
+        <span style="color: #22D3EE; text-transform: uppercase; letter-spacing: 0.05em;">Live Pipeline:</span>
+        <span>38,765 transactions · 39,357 products · 3 platforms</span>
     </div>
     <div style='display: flex; align-items: center; gap: 14px; font-size: 11px; font-weight: 500; color: #64748B; flex-wrap: wrap;'>
-        <span>⚡ Blinkit Index: <span style='color: #FF3366; font-weight: 700;'>100.0 (Base)</span></span>
+        <span>⚡ RFM: <span style='color: #FF3366; font-weight: 700;'>5 Segments</span></span>
         <span style='color: rgba(139,92,246,0.2);'>|</span>
-        <span>🟢 Zepto Value Gap: <span style='color: #00F5A0; font-weight: 700;'>-12.4%</span></span>
+        <span>📊 Cohort: <span style='color: #00F5A0; font-weight: 700;'>24 Months</span></span>
         <span style='color: rgba(139,92,246,0.2);'>|</span>
-        <span>🔮 Decision Models: <span style='color: #B923FF; font-weight: 700;'>Synced</span></span>
+        <span>🔬 Data Quality: <span style='color: #B923FF; font-weight: 700;'>IQR Checked</span></span>
     </div>
 </div>
 """, unsafe_allow_html=True)
@@ -166,6 +167,10 @@ elif "Journey" in page:
 elif "Simulator" in page:
     from views.business_simulator import render_business_simulator
     render_business_simulator(rfm, cohort, pm)
+
+elif "Quality" in page or "Data Quality" in page:
+    from views.data_quality import render_data_quality
+    render_data_quality(bl, ze, bb)
 
 
 # ─── FOOTER ───────────────────────────────────────────────────

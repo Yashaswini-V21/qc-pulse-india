@@ -293,8 +293,8 @@ def render_overview(
     with ic2:
         st.markdown(_insight_card(
             f"{churn_count_live:,}", "CUSTOMERS CHURNED",
-            f"{churn_pct_live}% of customers — last order 400+ days ago. "
-            "Win-back campaigns needed urgently."
+            f"{churn_pct_live}% of customers — avg 400 days since last order (proxy dataset). "
+            "Win-back campaign modelling available in the Simulator tab."
         ), unsafe_allow_html=True)
     with ic3:
         st.markdown(_insight_card(

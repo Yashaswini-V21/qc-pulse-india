@@ -59,24 +59,25 @@ def run_notebook(notebook_path):
     
     full_code = "\n\n# --- CELL ---\n\n".join(code_lines)
     
-    # Special adjustment for basket analysis to get more rules
-    if "04_basket_analysis" in notebook_path:
-        print("[INFO] Enhancing basket analysis rules: replacing min_support=0.005 with min_support=0.0015")
-        full_code = full_code.replace("min_support=0.005", "min_support=0.0015")
-    
+    # NOTE: No parameter substitutions are applied.
+    # The basket analysis (04) uses min_support=0.005 as written in the notebook.
+    # If this produces few rules, that is a real finding — do not silently
+    # lower the threshold to produce "better-looking" results.
+    # See notebooks/04_basket_analysis.ipynb Cell 3 for full parameter rationale.
+
     # Write to a temporary python file in notebooks/ directory
     notebooks_dir = os.path.dirname(os.path.abspath(notebook_path))
     temp_filename = f"temp_{os.path.splitext(os.path.basename(notebook_path))[0]}.py"
     temp_path = os.path.join(notebooks_dir, temp_filename)
-    
+
     with open(temp_path, 'w', encoding='utf-8') as f:
         f.write(full_code)
-    
+
     try:
         # Set PYTHONIOENCODING in environment to prevent UnicodeEncodeError in subprocess
         env = os.environ.copy()
         env['PYTHONIOENCODING'] = 'utf-8'
-        
+
         # Run python script in subprocess with working directory set to notebooks/
         result = subprocess.run(
             [sys.executable, temp_filename],
@@ -87,19 +88,19 @@ def run_notebook(notebook_path):
             encoding='utf-8',
             errors='replace'
         )
-        
+
         # Display output
         if result.stdout:
             print("--- Standard Output ---")
             # Replace non-ascii chars in stdout if any when printing to terminal
             clean_stdout = result.stdout.encode('ascii', errors='replace').decode('ascii')
             print(clean_stdout.strip())
-        
+
         if result.stderr:
             print("--- Error/Warning Output ---")
             clean_stderr = result.stderr.encode('ascii', errors='replace').decode('ascii')
             print(clean_stderr.strip())
-            
+
         if result.returncode == 0:
             elapsed = time.time() - start_time
             print(f"[OK] {os.path.basename(notebook_path)} completed successfully in {elapsed:.2f}s")
@@ -107,7 +108,7 @@ def run_notebook(notebook_path):
         else:
             print(f"[ERROR] {os.path.basename(notebook_path)} failed with exit code {result.returncode}")
             return False
-            
+
     except Exception as e:
         print(f"[ERROR] Exception occurred running {notebook_path}: {e}")
         return False
@@ -122,16 +123,18 @@ def run_notebook(notebook_path):
 def main():
     base_dir = os.path.dirname(os.path.abspath(__file__))
     notebooks_dir = os.path.join(base_dir, 'notebooks')
-    
+
     notebooks = [
         '01_data_load.ipynb',
         '02_cleaning.ipynb',
         '03_price_intelligence.ipynb',
-        '04_basket_analysis.ipynb',
+        '04_basket_analysis.ipynb',   # min_support=0.005 — may yield sparse rules (expected)
         '05_rfm_segmentation.ipynb',
         '06_cohort_retention.ipynb',
-        '07_sankey.ipynb'
+        '07_sankey.ipynb',
+        # '08_data_quality.ipynb',    # Optional — Data Quality page computes IQR live
     ]
+
     
     success_count = 0
     total_start_time = time.time()

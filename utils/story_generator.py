@@ -5,7 +5,10 @@ Auto-Intelligence Story Generator for QC Pulse India.
 Analyses cohort, RFM, and price data and returns 5 business-insight
 strings where every number is computed from live dataframe values.
 
-No hardcoded numbers except avg_order_value = ₹350.
+Fallback values (used when CSVs are missing / columns absent) are
+taken directly from notebook cell outputs (notebooks/05, 06, 07)
+and are documented inline. AVG_ORDER_VALUE = ₹350 is an industry
+estimate, not derived from the dataset.
 """
 
 import pandas as pd
@@ -58,10 +61,10 @@ def generate_cohort_story(
 
     # RFM segment sizes
     seg_counts = rfm_df['segment'].value_counts().to_dict() if 'segment' in rfm_df.columns else {}
-    champions  = int(seg_counts.get('Champion', 809))
-    at_risk    = int(seg_counts.get('At-Risk', 761))
-    churned    = int(seg_counts.get('Churned', 889))
-    loyal      = int(seg_counts.get('Loyal', 615))
+    champions  = int(seg_counts.get('Champion', 809))   # fallback: nb05 Cell 4 output
+    at_risk    = int(seg_counts.get('At-Risk', 206))    # fallback: nb05 Cell 4 output (206, NOT 761)
+    churned    = int(seg_counts.get('Churned', 889))    # fallback: nb05 Cell 4 output
+    loyal      = int(seg_counts.get('Loyal', 1006))     # fallback: nb05 Cell 4 output
     total_cust = len(rfm_df)
 
     # Champion LTV: avg 16.9 items × ₹350 × 12 months per year

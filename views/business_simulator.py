@@ -146,9 +146,28 @@ def render_business_simulator(
     <p style="
         font-family:'DM Sans',sans-serif;
         font-size:14px; color:{_LABEL_C};
-        margin:0 0 28px;
+        margin:0 0 16px;
     ">Model real business decisions — what-if scenarios backed by your actual data</p>
     """, unsafe_allow_html=True)
+
+    # ── ASSUMPTIONS DISCLOSURE ──
+    with st.expander("📌 Model Assumptions — click to see what’s data-derived vs. estimated", expanded=False):
+        st.markdown("""
+        | Parameter | Value | Source |
+        |---|---|---|
+        | Avg order value (₹) | ₹350 | **Industry estimate** — not from this dataset. Standard Indian QC basket per DPIIT/Redseer reports. |
+        | Orders/month (win-back) | 2 | **Conservative assumption** — for recovered churned customers. |
+        | Price elasticity | -2.0 | **Standard retail assumption** — textbook value; not estimated from this data. |
+        | Discount-to-retention boost | +0.3pp per 1% discount | **Heuristic** — caps at +25pp max. Not data-derived. |
+        | Recovered LTV fraction | 30% of Champion LTV | **Conservative heuristic** — not data-derived. |
+        | Champion LTV items | 16.9 avg items | **From data** — rfm_summary.csv, Cell 5 of notebook 05. |
+        | Base retention rate | Avg Month-1 from cohort data | **From data** — cohort_retention.csv, notebook 06. |
+        | Cohort date range | 2014–2015 | **From proxy grocery dataset** — not actual Blinkit/Zepto data. |
+
+        > All ₹ projections are illustrative estimates to demonstrate the modelling framework.
+        > They should not be interpreted as forecasts derived from this dataset alone.
+        """
+        )
 
     st.markdown("---")
 
