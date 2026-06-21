@@ -132,7 +132,7 @@ def main():
         '05_rfm_segmentation.ipynb',
         '06_cohort_retention.ipynb',
         '07_sankey.ipynb',
-        # '08_data_quality.ipynb',    # Optional — Data Quality page computes IQR live
+        '08_data_quality.ipynb',
     ]
 
     

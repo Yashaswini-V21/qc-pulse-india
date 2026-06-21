@@ -1,0 +1,13 @@
+platform,category,median_price,issue
+Zepto,Beverages,9500.0,"Median ₹9,500 exceeds ₹5,000 sanity threshold"
+Zepto,Chocolates & Candies,11400.0,"Median ₹11,400 exceeds ₹5,000 sanity threshold"
+Zepto,Cooking Essentials,9000.0,"Median ₹9,000 exceeds ₹5,000 sanity threshold"
+Zepto,"Dairy, Bread & Batter",9500.0,"Median ₹9,500 exceeds ₹5,000 sanity threshold"
+Zepto,Health & Hygiene,12950.0,"Median ₹12,950 exceeds ₹5,000 sanity threshold"
+Zepto,Home & Cleaning,12500.0,"Median ₹12,500 exceeds ₹5,000 sanity threshold"
+Zepto,Ice Cream & Desserts,11400.0,"Median ₹11,400 exceeds ₹5,000 sanity threshold"
+Zepto,"Meats, Fish & Eggs",15800.0,"Median ₹15,800 exceeds ₹5,000 sanity threshold"
+Zepto,Munchies,9000.0,"Median ₹9,000 exceeds ₹5,000 sanity threshold"
+Zepto,Paan Corner,16200.0,"Median ₹16,200 exceeds ₹5,000 sanity threshold"
+Zepto,Packaged Food,11400.0,"Median ₹11,400 exceeds ₹5,000 sanity threshold"
+Zepto,Personal Care,16200.0,"Median ₹16,200 exceeds ₹5,000 sanity threshold"

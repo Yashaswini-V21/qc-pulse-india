@@ -1,0 +1,4 @@
+platform,total_rows,price_col,Q1,Q3,IQR,lower_fence,upper_fence,n_outliers,pct_outliers,max_price,median_price
+Blinkit,8523,sale_price,93.83,185.64,91.82,-181.63,461.1,0,0.0,266.89,143.01
+Zepto,3279,sale_price,6000.0,19200.0,13200.0,-33600.0,58800.0,68,2.07,139900.0,11100.0
+BigBasket,27555,sale_price,95.0,359.0,264.0,-697.0,1151.0,1111,4.03,12500.0,190.0
