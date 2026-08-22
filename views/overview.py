@@ -353,3 +353,217 @@ def render_overview(
                 ">{text}</div>
             </div>
             """, unsafe_allow_html=True)
+
+    # ── AUTO-GENERATED INTELLIGENCE REPORT ──────────────────────────────────
+    st.markdown("<br><br>", unsafe_allow_html=True)
+    st.markdown(f"""
+    <div style="
+        background: linear-gradient(135deg, rgba(108,99,219,0.08), rgba(220,38,38,0.05));
+        border: 1px solid rgba(108,99,219,0.25);
+        border-radius: 16px;
+        padding: 28px 32px;
+        margin-bottom: 4px;
+    ">
+        <div style="display:flex; align-items:center; gap:12px; margin-bottom:6px;">
+            <span style="font-size:24px;">🤖</span>
+            <h2 style="
+                font-family:'DM Sans',sans-serif;
+                font-size:20px; font-weight:700;
+                color:#F1F5F9; margin:0;
+                letter-spacing:-0.02em;
+            ">Auto-Generated Intelligence Report</h2>
+        </div>
+        <p style="
+            font-family:'DM Sans',sans-serif;
+            font-size:13px; color:{_LABEL_C};
+            margin:0;
+        ">Five data-driven insight cards computed live from your CSV pipeline outputs.</p>
+    </div>
+    """, unsafe_allow_html=True)
+    st.markdown("<br>", unsafe_allow_html=True)
+
+    # ── Load data ──
+    try:
+        _rsum  = pd.read_csv("data/clean/rfm_summary.csv")
+        _rsum.columns = [c.strip().lower() for c in _rsum.columns]
+    except Exception:
+        _rsum = pd.DataFrame()
+
+    try:
+        _coh = pd.read_csv("data/clean/cohort_retention.csv")
+    except Exception:
+        _coh = pd.DataFrame()
+
+    try:
+        _pm  = pd.read_csv("data/clean/price_matrix.csv")
+    except Exception:
+        _pm = pd.DataFrame()
+
+    # ── Helper: safe segment lookup ──
+    def _seg(name: str, col: str, default=0):
+        if len(_rsum) == 0:
+            return default
+        row = _rsum[_rsum["segment"].str.strip() == name]
+        return row.iloc[0][col] if len(row) > 0 else default
+
+    total_customers   = int(_rsum["customers"].sum()) if len(_rsum) > 0 else 1
+    champ_count_r     = int(_seg("Champion",  "customers", 0))
+    churn_count_r     = int(_seg("Churned",   "customers", 0))
+    atrisk_count_r    = int(_seg("At-Risk",   "customers", 0))
+    potential_count_r = int(_seg("Potential", "customers", 0))
+
+    champ_pct_r  = round(champ_count_r  / total_customers * 100, 1)
+    churn_pct_r  = round(churn_count_r  / total_customers * 100, 1)
+    atrisk_pct_r = round(atrisk_count_r / total_customers * 100, 1)
+    pot_pct_r    = round(potential_count_r / total_customers * 100, 1)
+
+    churn_mon_r  = float(_seg("Churned",  "avg_monetary", 0))
+    atrisk_mon_r = float(_seg("At-Risk",  "avg_monetary", 0))
+    churn_rev_risk  = round(churn_count_r  * churn_mon_r)
+    atrisk_rev_risk = round(atrisk_count_r * atrisk_mon_r)
+
+    # cohort retention metrics
+    try:
+        _coh_vals = _coh["1"].astype(float)
+        avg_m1 = round(float(_coh_vals.mean()), 1)
+        best_idx  = _coh_vals.idxmax()
+        worst_idx = _coh_vals.idxmin()
+        best_cohort_name  = str(_coh.loc[best_idx,  "cohort_month"]) if "cohort_month" in _coh.columns else str(best_idx)
+        worst_cohort_name = str(_coh.loc[worst_idx, "cohort_month"]) if "cohort_month" in _coh.columns else str(worst_idx)
+        best_m1   = round(float(_coh_vals.max()), 1)
+        worst_m1  = round(float(_coh_vals.min()), 1)
+    except Exception:
+        avg_m1 = best_m1 = worst_m1 = 0.0
+        best_cohort_name = worst_cohort_name = "N/A"
+
+    # price metrics
+    try:
+        price_cols = ["Blinkit", "Zepto", "BigBasket"]
+        existing_price_cols = [c for c in price_cols if c in _pm.columns]
+        if existing_price_cols:
+            _pm_avgs = {c: round(float(_pm[c].dropna().mean()), 2) for c in existing_price_cols}
+            cheapest_platform = min(_pm_avgs, key=_pm_avgs.get)
+            cheapest_avg      = _pm_avgs[cheapest_platform]
+
+            def _price_range(row):
+                vals = [row[c] for c in existing_price_cols if pd.notna(row.get(c))]
+                return max(vals) - min(vals) if len(vals) >= 2 else 0
+
+            _pm["_gap"] = _pm.apply(_price_range, axis=1)
+            gap_row      = _pm.loc[_pm["_gap"].idxmax()]
+            gap_cat      = str(gap_row.get("category", "Unknown"))
+            gap_val      = round(float(gap_row["_gap"]), 2)
+        else:
+            cheapest_platform = "N/A"
+            cheapest_avg      = 0
+            gap_cat = "N/A"
+            gap_val = 0
+    except Exception:
+        cheapest_platform = "N/A"
+        cheapest_avg      = 0
+        gap_cat = "N/A"
+        gap_val = 0
+
+    # ── Card 5 recommendation logic ──
+    if churn_pct_r > 20:
+        card5_bullet = (
+            f"🔴 **Priority: Reduce churn.** {churn_pct_r}% of customers are Churned. "
+            "Focus retention budget on At-Risk segment before they become Churned."
+        )
+    elif champ_pct_r < 15:
+        card5_bullet = (
+            f"🟡 **Priority: Nurture Potential segment to Champions.** "
+            f"Potential customers are {pot_pct_r}% of base — the biggest upgrade opportunity."
+        )
+    else:
+        card5_bullet = (
+            "🟢 **Platform is healthy.** Focus on expanding the Champion segment "
+            "through loyalty programmes and premium tier incentives."
+        )
+
+    # ── Build plain-text report for download ──
+    report_txt = f"""QC Pulse India — Auto-Generated Intelligence Report
+Generated: 2026-08-22
+={'='*55}
+
+📊 CUSTOMER BASE HEALTH
+  • {champ_pct_r}% of customers are Champions — your highest-value segment ({champ_count_r:,} customers)
+  • {churn_pct_r}% are Churned — representing ₹{churn_rev_risk:,} monthly revenue at risk
+
+📈 RETENTION PERFORMANCE
+  • Average Month-1 retention across all cohorts: {avg_m1}%
+  • Best cohort: {best_cohort_name} ({best_m1}% Month-1 retention)
+  • Worst cohort: {worst_cohort_name} ({worst_m1}% Month-1 retention)
+
+💰 PRICE INTELLIGENCE
+  • Cheapest platform on average: {cheapest_platform} (avg ₹{cheapest_avg})
+  • Biggest price gap by category: {gap_cat} (₹{gap_val} spread across platforms)
+
+⚠️ RISK SIGNALS
+  • At-Risk customer count: {atrisk_count_r:,} ({atrisk_pct_r}% of base)
+  • Estimated At-Risk revenue at risk: ₹{atrisk_rev_risk:,}
+  • Recommendation: Consider reactivation campaign for At-Risk segment
+
+🎯 TOP RECOMMENDATION
+  • {card5_bullet.replace("**", "").replace("🔴 ", "").replace("🟡 ", "").replace("🟢 ", "")}
+"""
+
+    # ── Render 5 expander cards ──
+    _expander_style = f"""
+    <style>
+    details[data-testid="stExpander"] summary {{
+        font-family: 'DM Sans', sans-serif;
+        font-size: 14px;
+        font-weight: 700;
+        color: #F1F5F9;
+    }}
+    details[data-testid="stExpander"] {{
+        background: {_CARD_BG};
+        border-radius: 12px;
+        border: 1px solid rgba(108,99,219,0.15);
+        margin-bottom: 10px;
+    }}
+    </style>
+    """
+    st.markdown(_expander_style, unsafe_allow_html=True)
+
+    with st.expander("📊 Customer Base Health", expanded=True):
+        st.markdown(f"""
+- **{champ_pct_r}%** of customers are Champions — your highest-value segment ({champ_count_r:,} customers)
+- **{churn_pct_r}%** are Churned — representing **₹{churn_rev_risk:,}** monthly revenue at risk \\
+  *(Churned count × avg monetary value)*
+        """)
+
+    with st.expander("📈 Retention Performance"):
+        st.markdown(f"""
+- Average Month-1 retention across all cohorts: **{avg_m1}%**
+- Best cohort: **{best_cohort_name}** with **{best_m1}%** Month-1 retention — {round(best_m1 - avg_m1, 1)}pp above average
+- Worst cohort: **{worst_cohort_name}** with **{worst_m1}%** Month-1 retention — identifies acquisition quality issues
+        """)
+
+    with st.expander("💰 Price Intelligence"):
+        st.markdown(f"""
+- Cheapest platform on average: **{cheapest_platform}** (avg price ₹{cheapest_avg})
+- Biggest inter-platform price gap: **{gap_cat}** category — ₹{gap_val} spread across platforms
+- High price dispersion signals arbitrage opportunities and customer switching risk
+        """)
+
+    with st.expander("⚠️ Risk Signals"):
+        st.markdown(f"""
+- At-Risk customers: **{atrisk_count_r:,}** ({atrisk_pct_r}% of customer base)
+- Estimated At-Risk revenue at risk: **₹{atrisk_rev_risk:,}** *(At-Risk count × avg monetary)*
+- ⚡ **Recommendation:** Consider reactivation campaign for At-Risk segment before they churn
+        """)
+
+    with st.expander("🎯 Top Recommendation"):
+        st.markdown(card5_bullet)
+
+    # ── Download button ──
+    st.markdown("<br>", unsafe_allow_html=True)
+    st.download_button(
+        label="📥 Download Intelligence Report (.txt)",
+        data=report_txt,
+        file_name="qc_pulse_intelligence_report.txt",
+        mime="text/plain",
+        use_container_width=False,
+    )
