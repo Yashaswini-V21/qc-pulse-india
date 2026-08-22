@@ -171,10 +171,11 @@ def render_business_simulator(
 
     st.markdown("---")
 
-    tab1, tab2, tab3 = st.tabs([
+    tab1, tab2, tab3, tab4 = st.tabs([
         "📧  Win-Back Campaign",
         "💲  Price Change Impact",
         "📈  Retention Improvement",
+        "📊  Retention Campaign",
     ])
 
     # ── TAB 1: WIN-BACK CAMPAIGN ──
@@ -531,3 +532,155 @@ def render_business_simulator(
             Champion LTV benchmark = ₹{ri_res["champion_ltv"]:,.0f}/year.
             """
             st.markdown(_recommendation_card("Simulation Insight", ri_rec_text, border=_BORDER, accent=_PURPLE), unsafe_allow_html=True)
+
+    # ── TAB 4: RETENTION CAMPAIGN SIMULATOR ──
+    with tab4:
+        st.markdown("<br>", unsafe_allow_html=True)
+        st.markdown("<p class='section-label'>Retention Campaign Simulator</p>", unsafe_allow_html=True)
+        st.markdown(
+            f"<p style='color:{_LABEL_C};font-family:\"DM Sans\",sans-serif;font-size:13px;margin-bottom:20px'>"
+            "Project the revenue impact of a targeted retention campaign on any RFM segment. "
+            "Adjust budget, lift, and order assumptions to model your ROI instantly.</p>",
+            unsafe_allow_html=True
+        )
+
+        # Load rfm_summary for segment counts
+        try:
+            _rfm_sum = pd.read_csv("data/clean/rfm_summary.csv")
+            # normalise column names (lowercase)
+            _rfm_sum.columns = [c.strip().lower() for c in _rfm_sum.columns]
+            _seg_col   = "segment"
+            _count_col = "customers"
+        except Exception as _e:
+            st.warning(f"Could not load rfm_summary.csv: {_e}")
+            _rfm_sum = pd.DataFrame()
+            _seg_col = _count_col = ""
+
+        col_ctrl4, col_res4 = st.columns([1, 1.8])
+
+        with col_ctrl4:
+            st.markdown(f"""
+            <div style="
+                background: {_CARD_BG};
+                border-radius:14px; padding:22px 20px;
+                position:relative; overflow:hidden;
+                box-shadow:0 8px 24px rgba(0,0,0,0.4);
+            ">
+                <div style="position:absolute;top:0;left:0;right:0;height:2px;
+                    background:{_BORDER};"></div>
+                <div style="font-family:'Space Mono',monospace;font-size:10px;
+                    text-transform:uppercase;color:{_LABEL_C};letter-spacing:0.12em;
+                    margin-bottom:16px;">Campaign Controls</div>
+            </div>
+            """, unsafe_allow_html=True)
+
+            rc_budget   = st.slider("Retention campaign budget (₹)",
+                                    0, 500_000, 100_000, step=5_000, key="rc_budget")
+            rc_segment  = st.selectbox("Target segment",
+                                       ["Champion", "Loyal", "Potential", "At-Risk", "Churned"],
+                                       key="rc_segment")
+            rc_lift_pct = st.slider("Expected retention lift (%)",
+                                    0, 50, 10, key="rc_lift")
+            rc_aov      = st.slider("Average order value (₹)",
+                                    100, 2000, 350, step=10, key="rc_aov")
+            rc_orders   = st.slider("Orders per month after campaign",
+                                    1, 10, 3, key="rc_orders")
+
+        with col_res4:
+            # ── Compute values ──
+            if len(_rfm_sum) > 0 and _seg_col in _rfm_sum.columns:
+                seg_row   = _rfm_sum[_rfm_sum[_seg_col].str.strip() == rc_segment]
+                seg_total = int(seg_row[_count_col].iloc[0]) if len(seg_row) > 0 else 0
+            else:
+                seg_total = 0
+
+            retained      = int(seg_total * rc_lift_pct / 100)
+            monthly_rev   = retained * rc_aov * rc_orders
+            annual_rev    = monthly_rev * 12
+            roi           = round(annual_rev / rc_budget, 1) if rc_budget > 0 else 0
+
+            # ── 4 metric cards ──
+            m1, m2 = st.columns(2)
+            with m1:
+                st.metric(
+                    label=f"Customers in {rc_segment}",
+                    value=f"{seg_total:,}",
+                    help="From rfm_summary.csv"
+                )
+            with m2:
+                st.metric(
+                    label="Projected customers retained",
+                    value=f"{retained:,}",
+                    delta=f"+{rc_lift_pct}% lift"
+                )
+
+            st.markdown("<div style='margin-top:12px;'></div>", unsafe_allow_html=True)
+
+            m3, m4 = st.columns(2)
+            with m3:
+                st.metric(
+                    label="Projected monthly revenue impact",
+                    value=f"₹{monthly_rev:,.0f}",
+                    delta=f"{rc_orders} orders × ₹{rc_aov}"
+                )
+            with m4:
+                st.metric(
+                    label="Projected annual revenue impact",
+                    value=f"₹{annual_rev:,.0f}",
+                    delta=f"{roi}x ROI"
+                )
+
+            st.markdown("<br>", unsafe_allow_html=True)
+
+            # ── Before / After bar chart ──
+            st.markdown(f"""
+            <div style="font-family:'Space Mono',monospace;font-size:10px;
+                text-transform:uppercase;color:{_LABEL_C};letter-spacing:0.12em;
+                margin-bottom:12px;">Before vs After Campaign — Monthly Revenue (₹)</div>
+            """, unsafe_allow_html=True)
+
+            before_rev = 0           # baseline = no retained customers from campaign
+            after_rev  = monthly_rev
+
+            fig_rc = go.Figure()
+            fig_rc.add_trace(go.Bar(
+                x=["Before Campaign", "After Campaign"],
+                y=[before_rev, after_rev],
+                marker_color=["#475569", "#F5A623"],
+                text=[f"₹{before_rev:,.0f}", f"₹{after_rev:,.0f}"],
+                textposition="outside",
+                textfont=dict(color="#94A3B8", size=13, family="DM Sans"),
+                marker_line_width=0,
+                width=0.45,
+            ))
+            fig_rc.update_layout(
+                template="plotly_dark",
+                plot_bgcolor=_PLOT_BG,
+                paper_bgcolor=_PLOT_BG,
+                font=dict(family="DM Sans", color="#94A3B8", size=11),
+                margin=dict(l=10, r=10, t=10, b=10),
+                height=260,
+                xaxis=dict(color="#94A3B8", gridcolor="#1E2D40", linecolor="#1E2D40"),
+                yaxis=dict(color="#94A3B8", gridcolor="#1E2D40", linecolor="#1E2D40",
+                           tickprefix="₹"),
+                hoverlabel=dict(bgcolor=_HOVER_BG, bordercolor=_HOVER_BD,
+                                font=dict(color="white", size=12)),
+                showlegend=False,
+            )
+            st.plotly_chart(fig_rc, use_container_width=True)
+
+            # ── Recommendation block ──
+            st.markdown("<br>", unsafe_allow_html=True)
+            rec_color = _GREEN if roi >= 1 else "#F59E0B"
+            roi_icon  = "💡" if roi >= 1 else "⚠️"
+            rec_body  = (
+                f"Investing <b>₹{rc_budget:,}</b> in the <b>{rc_segment}</b> segment retention "
+                f"could yield <b>₹{annual_rev:,.0f}</b> annual revenue uplift — "
+                f"a <b style='color:{rec_color};'>{roi}x ROI</b>."
+            )
+            st.markdown(_recommendation_card(
+                f"{roi_icon} Campaign Recommendation",
+                rec_body,
+                border=f"linear-gradient(90deg, {rec_color}, #6C63DB)",
+                accent=rec_color,
+            ), unsafe_allow_html=True)

@@ -4,6 +4,7 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 import logging
+from scipy.stats import chi2_contingency
 
 logger = logging.getLogger(__name__)
 
@@ -349,6 +350,113 @@ def render_customer_segments(
         </div>
     </div>
     """, unsafe_allow_html=True)
+
+    st.markdown("<br>", unsafe_allow_html=True)
+
+    # ── CHI-SQUARED CONTINGENCY TEST (segment × F_score) ──
+    st.markdown(f"""
+    <div style="font-family:'Space Mono',monospace;font-size:10px;
+        text-transform:uppercase;color:{_LABEL_C};letter-spacing:0.12em;
+        margin-bottom:12px;">🔬 Chi-Squared Independence Test — Segment × Frequency Score</div>
+    """, unsafe_allow_html=True)
+
+    try:
+        contingency = pd.crosstab(rfm['segment'], rfm['F_score'])
+        chi2, p_value, dof, expected = chi2_contingency(contingency)
+
+        if p_value < 0.05:
+            sig_icon  = "✅"
+            sig_color = "#1D9E75"
+            sig_bg    = "rgba(29,158,117,0.08)"
+            sig_bd    = "rgba(29,158,117,0.3)"
+            sig_text  = (
+                f"Statistically significant: Customer segment distribution differs "
+                f"significantly by frequency score band (p&#8202;=&#8202;{p_value:.4f})"
+            )
+        else:
+            sig_icon  = "⚠️"
+            sig_color = "#F59E0B"
+            sig_bg    = "rgba(245,158,11,0.08)"
+            sig_bd    = "rgba(245,158,11,0.3)"
+            sig_text  = f"Not statistically significant (p&#8202;=&#8202;{p_value:.4f})"
+
+        st.markdown(f"""
+        <div style="
+            background: {_CARD_BG};
+            border-radius: 14px;
+            padding: 22px 24px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+            margin-bottom: 16px;
+        ">
+            <div style="
+                position:absolute; top:0; left:0; right:0; height:2px;
+                background: linear-gradient(90deg, {sig_color}, #6C63DB);
+            "></div>
+
+            <!-- Header row -->
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:16px;">
+                <div>
+                    <h4 style="font-family:'DM Sans',sans-serif; font-size:16px; font-weight:700; color:#FFFFFF; margin:0 0 6px;">
+                        Chi-Squared Test of Independence
+                    </h4>
+                    <p style="font-family:'DM Sans',sans-serif; font-size:12.5px; color:#CBD5E1; margin:0; line-height:1.6;">
+                        <b>Contingency table:</b> RFM Segments (rows) × Frequency Score bands 1–5 (columns)<br>
+                        <b>H&#8320;:</b> Segment membership is independent of frequency score band.
+                    </p>
+                </div>
+                <div style="text-align:right; flex-shrink:0;">
+                    <div style="font-family:'Space Mono',monospace; font-size:10px; color:{_LABEL_C}; text-transform:uppercase; letter-spacing:0.05em;">χ² Statistic</div>
+                    <div style="font-family:'DM Sans',sans-serif; font-size:26px; font-weight:700; color:{sig_color};">{chi2:,.2f}</div>
+                    <div style="font-family:'Space Mono',monospace; font-size:10px; color:#94A3B8; margin-top:2px;">
+                        p&#8202;=&#8202;{p_value:.4f} &nbsp;·&nbsp; df&#8202;=&#8202;{dof}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Significance badge -->
+            <div style="
+                margin-top:16px;
+                display:inline-flex; align-items:center; gap:8px;
+                background: {sig_bg};
+                border: 1px solid {sig_bd};
+                border-radius: 8px;
+                padding: 10px 16px;
+                font-family:'DM Sans',sans-serif;
+                font-size:13px;
+                color: {sig_color};
+                font-weight: 600;
+                line-height: 1.5;
+            ">
+                {sig_icon}&nbsp; {sig_text}
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+        # Plain-English explanation
+        st.markdown(f"""
+        <div style="
+            background: rgba(108,99,219,0.06);
+            border-left: 3px solid #6C63DB;
+            border-radius: 0 10px 10px 0;
+            padding: 14px 18px;
+            margin-bottom: 8px;
+            font-family:'DM Sans',sans-serif;
+            font-size:13px;
+            color:#94A3B8;
+            line-height:1.7;
+        ">
+            <b style="color:#A5B4FC;">📖 What this means:</b> A p-value below 0.05 tells us the relationship
+            between a customer's frequency score and their final RFM segment is <em>not random</em> —
+            meaning how often a customer orders directly predicts which behavioural segment they
+            end up in. This validates that the RFM segmentation captures real, structured patterns
+            in purchasing behaviour rather than noise.
+        </div>
+        """, unsafe_allow_html=True)
+
+    except Exception as chi2_err:
+        st.warning(f"Chi-squared test could not be computed: {chi2_err}")
 
     st.markdown("<br>", unsafe_allow_html=True)
 
