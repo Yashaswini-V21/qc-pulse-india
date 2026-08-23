@@ -511,9 +511,9 @@ Generated: 2026-08-22
     # ── Render 5 expander cards ──
     _expander_style = f"""
     <style>
-    details[data-testid="stExpander"] summary {{
+    details[data-testid="stExpander"] summary p {{
         font-family: 'DM Sans', sans-serif;
-        font-size: 14px;
+        font-size: 15px;
         font-weight: 700;
         color: #F1F5F9;
     }}
