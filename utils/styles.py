@@ -18,7 +18,8 @@ def load_custom_css() -> str:
 @import url('https://fonts.cdnfonts.com/css/dm-sans');
 @import url('https://fonts.cdnfonts.com/css/space-mono');
 
-* { font-family: 'Outfit', sans-serif !important; }
+*:not(.material-symbols-rounded):not(.material-icons) { font-family: 'Outfit', sans-serif !important; }
+.material-symbols-rounded { font-family: 'Material Symbols Rounded' !important; }
 
 /* Animated neon mesh gradient background - MORE VIBRANT & COLORFUL */
 .stApp {

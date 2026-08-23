@@ -306,19 +306,18 @@ def render_data_quality(
         # Render as styled HTML table
         rows_html = ""
         for _, row in issues_df.iterrows():
-            rows_html += f"""
-            <tr style="border-bottom:1px solid #1E2D40;">
-                <td style="padding:10px 14px;color:{PLATFORM_COLORS.get(row['Platform'], _VALUE_C)};
-                    font-weight:700;font-family:'DM Sans',sans-serif;">{row['Platform']}</td>
-                <td style="padding:10px 14px;color:{_VALUE_C};font-family:'DM Sans',sans-serif;">{row['Category']}</td>
-                <td style="padding:10px 14px;color:#EF4444;font-family:'Space Mono',monospace;
-                    font-weight:700;">{row['Median Price (₹)']}</td>
-                <td style="padding:10px 14px;font-family:'Space Mono',sans-serif;font-size:11px;color:{_AMBER};">{row['Verdict']}</td>
-            </tr>
-            """
+            rows_html += (
+                f"<tr style='border-bottom:1px solid #1E2D40;'>"
+                f"<td style='padding:10px 14px;color:{PLATFORM_COLORS.get(row['Platform'], _VALUE_C)};"
+                f"font-weight:700;font-family:\"DM Sans\",sans-serif;'>{row['Platform']}</td>"
+                f"<td style='padding:10px 14px;color:{_VALUE_C};font-family:\"DM Sans\",sans-serif;'>{row['Category']}</td>"
+                f"<td style='padding:10px 14px;color:#EF4444;font-family:\"Space Mono\",monospace;"
+                f"font-weight:700;'>{row['Median Price (₹)']}</td>"
+                f"<td style='padding:10px 14px;font-family:\"Space Mono\",sans-serif;font-size:11px;color:{_AMBER};'>{row['Verdict']}</td>"
+                f"</tr>"
+            )
         st.markdown(f"""
-        <div style="background:{_CARD_BG};border-radius:12px;overflow:hidden;
-            box-shadow:0 8px 24px rgba(0,0,0,0.4);">
+<div style="background:{_CARD_BG};border-radius:12px;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,0.4);">
             <table style="width:100%;border-collapse:collapse;">
                 <thead>
                     <tr style="background:rgba(239,68,68,0.08);border-bottom:1px solid rgba(239,68,68,0.2);">
@@ -359,18 +358,17 @@ def render_data_quality(
     rows_html = ""
     for page, source, note, status in method_rows:
         badge = _status_badge(status)
-        rows_html += f"""
-        <tr style="border-bottom:1px solid #1E2D40;">
-            <td style="padding:10px 14px;color:{_VALUE_C};font-family:'DM Sans',sans-serif;font-size:13px;">{page}</td>
-            <td style="padding:10px 14px;color:{_CYAN};font-family:'Space Mono',monospace;font-size:10px;">{source}</td>
-            <td style="padding:10px 14px;color:{_LABEL_C};font-family:'DM Sans',sans-serif;font-size:12px;">{note}</td>
-            <td style="padding:10px 14px;">{badge}</td>
-        </tr>
-        """
+        rows_html += (
+            f"<tr style='border-bottom:1px solid #1E2D40;'>"
+            f"<td style='padding:10px 14px;color:{_VALUE_C};font-family:\"DM Sans\",sans-serif;font-size:13px;'>{page}</td>"
+            f"<td style='padding:10px 14px;color:{_CYAN};font-family:\"Space Mono\",monospace;font-size:10px;'>{source}</td>"
+            f"<td style='padding:10px 14px;color:{_LABEL_C};font-family:\"DM Sans\",sans-serif;font-size:12px;'>{note}</td>"
+            f"<td style='padding:10px 14px;'>{badge}</td>"
+            f"</tr>"
+        )
 
     st.markdown(f"""
-    <div style="background:{_CARD_BG};border-radius:12px;overflow:hidden;
-        box-shadow:0 8px 24px rgba(0,0,0,0.4);">
+<div style="background:{_CARD_BG};border-radius:12px;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,0.4);">
         <table style="width:100%;border-collapse:collapse;">
             <thead>
                 <tr style="background:rgba(6,182,212,0.06);border-bottom:1px solid rgba(6,182,212,0.15);">
