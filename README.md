@@ -253,12 +253,14 @@ QC_Pulse_India/
   <img src="https://img.shields.io/badge/GitHub-Yashaswini--V21-181717?style=for-the-badge&logo=github&logoColor=white" alt="GitHub Profile"/>
 </a>
 &nbsp;
-<a href="https://qc-pulse-india.streamlit.app" target="_blank">
-  <img src="https://img.shields.io/badge/🚀%20Live-Dashboard-7C3AED?style=for-the-badge&logo=streamlit&logoColor=white" alt="Live Dashboard"/>
+<a href="https://linkedin.com/in/yashaswini21" target="_blank">
+  <img src="https://img.shields.io/badge/LinkedIn-Connect-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn Profile"/>
 </a>
 &nbsp;
-<a href="docs/LIMITATIONS.md">
-  <img src="https://img.shields.io/badge/📋%20Read-Limitations-F59E0B?style=for-the-badge" alt="Limitations"/>
+<img src="https://img.shields.io/badge/STATUS-PORTFOLIO%20READY-10B981?style=for-the-badge" alt="Portfolio Ready"/>
+&nbsp;
+<a href="https://qc-pulse-india.streamlit.app" target="_blank">
+  <img src="https://img.shields.io/badge/🚀%20Live-Dashboard-7C3AED?style=for-the-badge&logo=streamlit&logoColor=white" alt="Live Dashboard"/>
 </a>
 
 <br/><br/>
