@@ -243,24 +243,28 @@ QC_Pulse_India/
 
 <!-- ── FOOTER ──────────────────────────────────────────────────────────── -->
 
-<img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=12,20,24&height=140&section=footer&text=Built%20with%20honest%20data%20%26%20clean%20code&fontSize=16&fontColor=a78bfa&fontAlignY=65&animation=fadeIn" width="100%"/>
+<img src="https://capsule-render.vercel.app/api?type=waving&amp;color=gradient&amp;customColorList=12,20,24&amp;height=140&amp;section=footer&amp;text=Built%20with%20honest%20data%20and%20clean%20code&amp;fontSize=16&amp;fontColor=a78bfa&amp;fontAlignY=65&amp;animation=fadeIn" width="100%"/>
 
 <div align="center">
 
 <br/>
 
 <a href="https://github.com/Yashaswini-V21" target="_blank">
-  <img src="https://img.shields.io/badge/GitHub-Yashaswini--V21-181717?style=for-the-badge&logo=github&logoColor=white" alt="GitHub Profile"/>
+  <img src="https://img.shields.io/badge/GitHub-Yashaswini--V21-181717?style=for-the-badge&amp;logo=github&amp;logoColor=white" alt="GitHub Profile"/>
 </a>
 &nbsp;
 <a href="https://linkedin.com/in/yashaswini21" target="_blank">
-  <img src="https://img.shields.io/badge/LinkedIn-Connect-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn Profile"/>
+  <img src="https://img.shields.io/badge/LinkedIn-Connect-0A66C2?style=for-the-badge&amp;logo=linkedin&amp;logoColor=white" alt="LinkedIn Profile"/>
 </a>
 &nbsp;
 <img src="https://img.shields.io/badge/STATUS-PORTFOLIO%20READY-10B981?style=for-the-badge" alt="Portfolio Ready"/>
 &nbsp;
 <a href="https://qc-pulse-india.streamlit.app" target="_blank">
-  <img src="https://img.shields.io/badge/🚀%20Live-Dashboard-7C3AED?style=for-the-badge&logo=streamlit&logoColor=white" alt="Live Dashboard"/>
+  <img src="https://img.shields.io/badge/🚀%20Live-Dashboard-7C3AED?style=for-the-badge&amp;logo=streamlit&amp;logoColor=white" alt="Live Dashboard"/>
+</a>
+&nbsp;
+<a href="docs/LIMITATIONS.md">
+  <img src="https://img.shields.io/badge/📋%20Read-Limitations-F59E0B?style=for-the-badge" alt="Limitations"/>
 </a>
 
 <br/><br/>
