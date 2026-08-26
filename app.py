@@ -103,10 +103,11 @@ with st.sidebar:
     st.markdown("<br>", unsafe_allow_html=True)
     st.markdown("""
     <div style='font-size:10px; color:#334155;
-                text-align:center; padding:8px 0'>
+                text-align:center; padding:8px 0; margin-bottom: 50px;'>
         Built by Yashaswini V<br>
         <span style='color:#8B5CF6'>●</span> May 2026
     </div>
+    <br><br>
     """, unsafe_allow_html=True)
 
 

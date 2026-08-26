@@ -17,9 +17,46 @@ def load_custom_css() -> str:
 @import url('https://fonts.cdnfonts.com/css/jetbrains-mono-2');
 @import url('https://fonts.cdnfonts.com/css/dm-sans');
 @import url('https://fonts.cdnfonts.com/css/space-mono');
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200');
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200');
 
-*:not(.material-symbols-rounded):not(.material-icons) { font-family: 'Outfit', sans-serif !important; }
-.material-symbols-rounded { font-family: 'Material Symbols Rounded' !important; }
+html, body, p, h1, h2, h3, h4, h5, h6, label, input, button, select, textarea, div.stMarkdown, [data-testid="stMarkdownContainer"] p {
+  font-family: 'Outfit', sans-serif !important;
+}
+
+.material-symbols-rounded,
+.material-symbols-outlined,
+.material-icons,
+[data-testid="stIcon"],
+[data-testid="stIconMaterial"],
+[data-testid="stExpanderToggleIcon"],
+[data-testid="stExpanderSummary"] i {
+  font-family: 'Material Symbols Rounded', 'Material Symbols Outlined', 'Material Icons' !important;
+}
+
+details[data-testid="stExpander"] summary {
+  padding: 14px 20px !important;
+  cursor: pointer !important;
+}
+
+details[data-testid="stExpander"] summary p {
+  font-family: 'Outfit', sans-serif !important;
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  color: #F1F5F9 !important;
+  margin: 0 !important;
+}
+
+/* Eliminate raw ligature text leak (_arrow_right_) across all expanders */
+details[data-testid="stExpander"] summary [data-testid="stExpanderToggleIcon"],
+details[data-testid="stExpander"] summary [data-testid="stIconMaterial"],
+details[data-testid="stExpander"] summary svg,
+details[data-testid="stExpander"] summary i {
+  display: none !important;
+  visibility: hidden !important;
+  width: 0 !important;
+  height: 0 !important;
+}
 
 /* Animated neon mesh gradient background - MORE VIBRANT & COLORFUL */
 .stApp {
@@ -790,12 +827,46 @@ hr {
 
 
 /* ═══════════════════════════════════════════════════════════
-   SECTION 17 — HIDE STREAMLIT BRANDING
+   SECTION 17 — SIDEBAR TOGGLE & BRANDING
    ═══════════════════════════════════════════════════════════ */
+
+/* Enable header for sidebar toggle control */
+header {
+  visibility: visible !important;
+  background: transparent !important;
+}
+
+[data-testid="stHeader"] {
+  background: transparent !important;
+  z-index: 99 !important;
+}
+
+/* Style Sidebar Collapse & Expand Toggle Arrow Buttons */
+[data-testid="stSidebarCollapseButton"],
+[data-testid="stSidebarExpandButton"],
+button[data-testid="baseButton-header"],
+button[data-testid="stHeaderCollapseButton"] {
+  visibility: visible !important;
+  display: inline-flex !important;
+  background: rgba(13,20,35,0.85) !important;
+  border: 1px solid rgba(139,92,246,0.3) !important;
+  border-radius: 10px !important;
+  color: #A78BFA !important;
+  transition: all 0.3s ease !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.4) !important;
+  margin: 6px !important;
+}
+
+[data-testid="stSidebarCollapseButton"]:hover,
+[data-testid="stSidebarExpandButton"]:hover {
+  background: rgba(139,92,246,0.25) !important;
+  border-color: rgba(6,182,212,0.5) !important;
+  color: #FFFFFF !important;
+  transform: scale(1.08);
+}
 
 #MainMenu { visibility: hidden; }
 footer { visibility: hidden; }
-header { visibility: hidden; }
 .stDeployButton { display: none; }
 
 </style>

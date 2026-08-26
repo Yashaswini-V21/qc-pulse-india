@@ -511,17 +511,34 @@ Generated: 2026-08-22
     # ── Render 5 expander cards ──
     _expander_style = f"""
     <style>
-    details[data-testid="stExpander"] summary p {{
-        font-family: 'DM Sans', sans-serif;
-        font-size: 15px;
-        font-weight: 700;
-        color: #F1F5F9;
-    }}
     details[data-testid="stExpander"] {{
-        background: {_CARD_BG};
-        border-radius: 12px;
-        border: 1px solid rgba(108,99,219,0.15);
-        margin-bottom: 10px;
+        background: {_CARD_BG} !important;
+        border-radius: 12px !important;
+        border: 1px solid rgba(108,99,219,0.2) !important;
+        margin-bottom: 12px !important;
+        overflow: hidden !important;
+    }}
+    details[data-testid="stExpander"] summary {{
+        padding: 14px 20px !important;
+        cursor: pointer !important;
+    }}
+    details[data-testid="stExpander"] summary p {{
+        font-family: 'DM Sans', sans-serif !important;
+        font-size: 15px !important;
+        font-weight: 700 !important;
+        color: #F1F5F9 !important;
+        margin: 0 !important;
+        display: inline-block !important;
+    }}
+    /* Eliminate raw ligature text leak (_arrow_right_) */
+    details[data-testid="stExpander"] summary [data-testid="stExpanderToggleIcon"],
+    details[data-testid="stExpander"] summary [data-testid="stIconMaterial"],
+    details[data-testid="stExpander"] summary svg,
+    details[data-testid="stExpander"] summary i {{
+        display: none !important;
+        visibility: hidden !important;
+        width: 0 !important;
+        height: 0 !important;
     }}
     </style>
     """
